@@ -19,7 +19,7 @@ import {
   Wind,
   Droplets,
   Cloud,
-  PlusMinus,
+  Baseline,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -51,7 +51,9 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
-import { analyzeAbg, AbgFormSchema, type AbgFormState } from "@/app/actions";
+import { analyzeAbg } from "@/app/actions";
+import { AbgFormSchema, type AbgFormState } from "@/app/schema";
+import { Label } from "@/components/ui/label";
 
 type Results = Omit<AbgFormState, "error">;
 
@@ -137,7 +139,7 @@ export default function Home() {
     { name: "pCO2", label: "pCO₂ (mmHg)", icon: Cloud },
     { name: "HCO3", label: "HCO₃⁻ (mEq/L)", icon: Droplets },
     { name: "PaO2", label: "PaO₂ (mmHg)", icon: Wind },
-    { name: "BE", label: "Base Excess (mEq/L)", icon: PlusMinus },
+    { name: "BE", label: "Base Excess (mEq/L)", icon: Baseline },
   ] as const;
 
   return (

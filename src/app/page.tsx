@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -346,19 +347,16 @@ export default function Home() {
             <div className="md:col-span-2">
               <Card className="shadow-lg">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
+                  <CardTitle className="flex items-center gap-2 text-xl">
                     <FileText className="text-primary" />
-                    Enter Patient ABG Values
+                    Patient ABG Values
                   </CardTitle>
-                  <CardDescription>
-                    Input the values from the ABG report to begin analysis.
-                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <Form {...form}>
                     <form
                       onSubmit={form.handleSubmit(onSubmit)}
-                      className="space-y-8"
+                      className="space-y-6"
                     >
                       {formFields.map((field) => (
                         <FormField
@@ -367,12 +365,12 @@ export default function Home() {
                           name={field.name}
                           render={({ field: { value, onChange } }) => (
                             <FormItem>
-                              <div className="flex justify-between items-center">
-                                <FormLabel className="flex items-center gap-2">
-                                  <field.icon className="w-4 h-4 text-muted-foreground" />
+                              <div className="flex justify-between items-baseline mb-2">
+                                <FormLabel className="flex items-center gap-2 font-medium">
+                                  <field.icon className="w-5 h-5 text-muted-foreground" />
                                   {field.label}
                                 </FormLabel>
-                                <span className="text-sm font-medium text-foreground w-20 text-right">
+                                <span className="text-lg font-bold text-primary w-24 text-right">
                                   {value}
                                 </span>
                               </div>
@@ -384,6 +382,7 @@ export default function Home() {
                                   max={field.max}
                                   step={field.step}
                                   disabled={isLoading}
+                                  className="[&>span:first-child]:h-2 [&>span:last-child]:h-5 [&>span:last-child]:w-5"
                                 />
                               </FormControl>
                               <FormMessage />

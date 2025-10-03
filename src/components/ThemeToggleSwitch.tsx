@@ -3,7 +3,8 @@
 
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
-import { Sun, Moon } from 'lucide-react';
+import { Sun, Moon, Cloud, Star } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
 export function ThemeToggleSwitch() {
@@ -15,8 +16,7 @@ export function ThemeToggleSwitch() {
   }, []);
 
   if (!mounted) {
-    // Avoid rendering mismatch during server-side rendering and provide a placeholder.
-    return <div className="w-40 h-10 rounded-full bg-muted animate-pulse" />;
+    return <div className="h-12 w-28 rounded-full bg-muted" />;
   }
   
   const isDark = theme === 'dark';
@@ -25,32 +25,86 @@ export function ThemeToggleSwitch() {
     setTheme(isDark ? 'light' : 'dark');
   };
 
+  const spring = {
+    type: 'spring',
+    stiffness: 500,
+    damping: 30,
+  };
+
   return (
-    <div className="flex items-center justify-center gap-4">
-       <span className={cn("font-semibold transition-colors duration-300", !isDark ? 'text-foreground' : 'text-muted-foreground')}>
-        Light
-      </span>
+    <div className="flex items-center justify-center">
       <button
         onClick={toggleTheme}
         className={cn(
-          'relative inline-flex h-8 w-16 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
-          isDark ? 'bg-primary/20' : 'bg-primary/20'
+          'relative flex h-12 w-28 cursor-pointer items-center rounded-full p-1 transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+          isDark ? 'bg-zinc-800' : 'bg-sky-400'
         )}
-        aria-label="Toggle theme"
+        aria-label={`Switch to ${isDark ? 'light' : 'dark'} mode`}
       >
-        <span
+        {/* Bouncy Thumb */}
+        <motion.div
+          layout
+          transition={spring}
           className={cn(
-            'absolute flex h-7 w-7 transform items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-transform duration-300 ease-in-out',
-            isDark ? 'translate-x-9' : 'translate-x-1'
+            'absolute z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-md',
+            isDark ? 'right-1' : 'left-1'
           )}
         >
-          <Sun className={cn("h-4 w-4 transition-transform duration-500", isDark ? "rotate-90 scale-0" : "rotate-0 scale-100")} />
-          <Moon className={cn("absolute h-4 w-4 transition-transform duration-500", isDark ? "rotate-0 scale-100" : "-rotate-90 scale-0")} />
-        </span>
+          <AnimatePresence mode="wait">
+            {isDark ? (
+              <motion.div
+                key="moon"
+                initial={{ rotate: -90, scale: 0 }}
+                animate={{ rotate: 0, scale: 1, transition: spring }}
+                exit={{ rotate: 90, scale: 0, transition: spring }}
+              >
+                <Moon className="h-6 w-6 text-zinc-800" />
+              </motion.div>
+            ) : (
+              <motion.div
+                key="sun"
+                initial={{ rotate: 90, scale: 0 }}
+                animate={{ rotate: 0, scale: 1, transition: spring }}
+                exit={{ rotate: -90, scale: 0, transition: spring }}
+              >
+                <Sun className="h-6 w-6 text-sky-500" />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
+
+        {/* Background Decorations */}
+        <AnimatePresence>
+        {isDark && (
+            <motion.div
+                key="stars"
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={{ opacity: 1, scale: 1, transition: { delay: 0.1, ...spring } }}
+                exit={{ opacity: 0, scale: 0.5, transition: spring }}
+                className="absolute left-4"
+            >
+                <Star className="h-3 w-3 text-yellow-300" style={{ top: '-8px', left: '0px' }} />
+                <Star className="h-2 w-2 text-yellow-300" style={{ top: '10px', left: '10px' }} />
+                <Star className="h-2 w-2 text-yellow-300" style={{ top: '-2px', left: '25px' }}/>
+            </motion.div>
+        )}
+        </AnimatePresence>
+        <AnimatePresence>
+        {!isDark && (
+            <motion.div
+                key="clouds"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0, transition: { delay: 0.1, ...spring } }}
+                exit={{ opacity: 0, x: 20, transition: spring }}
+                className="absolute right-4"
+            >
+                <Cloud className="h-4 w-4 text-white" style={{ top: '-5px', right: '0px' }} />
+                <Cloud className="h-3 w-3 text-white" style={{ top: '8px', right: '10px' }} />
+            </motion.div>
+        )}
+        </AnimatePresence>
       </button>
-      <span className={cn("font-semibold transition-colors duration-300", isDark ? 'text-foreground' : 'text-muted-foreground')}>
-        Dark
-      </span>
     </div>
   );
 }
+

@@ -87,3 +87,22 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+/* Theme Toggle Animations */
+@layer components {
+  .theme-toggle-shadow {
+    @apply absolute -inset-1 rounded-full bg-primary/20 blur-md transition-all duration-700;
+  }
+  .theme-toggle-stars {
+    @apply absolute inset-0 -z-10 transform-gpu;
+    -webkit-mask-image: radial-gradient(
+      circle at 50% 50%,
+      black 40%,
+      transparent 100%
+    );
+  }
+  .theme-toggle-star {
+    @apply absolute bg-white rounded-full;
+  }
+}
+

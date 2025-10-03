@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import type { z } from "zod";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   Beaker,
   Stethoscope,
@@ -96,14 +96,42 @@ export default function Home() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isScanDialogOpen, setIsScanDialogOpen] = useState(false);
 
+  const defaultFormValues = {
+    pH: 7.4,
+    pCO2: 40,
+    HCO3: 24,
+    PaO2: 95,
+    BE: 0,
+  };
+
+  const form = useForm<z.infer<typeof AbgFormSchema>>({
+    resolver: zodResolver(AbgFormSchema),
+    defaultValues: defaultFormValues,
+  });
+
+  const resetPage = useCallback(() => {
+    setIsLoading(false);
+    setIsScanning(false);
+    setResults(null);
+    setError(null);
+    form.reset(defaultFormValues);
+  }, [form, defaultFormValues]);
+
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const savedHistory = localStorage.getItem("abgAnalysisHistory");
+    if (user) {
+      resetPage();
+      const savedHistory = localStorage.getItem(`abgAnalysisHistory_${user.uid}`);
       if (savedHistory) {
         setHistory(JSON.parse(savedHistory));
+      } else {
+        setHistory([]);
       }
+    } else {
+      // Clear history when user logs out
+      setHistory([]);
     }
-  }, []);
+  }, [user, resetPage]);
+
 
   useEffect(() => {
     const NOTIFICATION_THRESHOLD_DAYS = 3;
@@ -145,17 +173,6 @@ export default function Home() {
     }
   }, []);
 
-  const form = useForm<z.infer<typeof AbgFormSchema>>({
-    resolver: zodResolver(AbgFormSchema),
-    defaultValues: {
-      pH: 7.4,
-      pCO2: 40,
-      HCO3: 24,
-      PaO2: 95,
-      BE: 0,
-    },
-  });
-
   const handleImageScan = async (imageDataUri: string) => {
     setIsScanDialogOpen(false);
     setIsScanning(true);
@@ -184,6 +201,12 @@ export default function Home() {
       setIsScanning(false);
     }
   };
+  
+  const saveHistory = (newHistory: AnalysisResult[]) => {
+    if (user) {
+      localStorage.setItem(`abgAnalysisHistory_${user.uid}`, JSON.stringify(newHistory));
+    }
+  }
 
   async function onSubmit(values: z.infer<typeof AbgFormSchema>) {
     setIsLoading(true);
@@ -205,7 +228,7 @@ export default function Home() {
         setResults(newResult);
         const updatedHistory = [newResult, ...history];
         setHistory(updatedHistory);
-        localStorage.setItem("abgAnalysisHistory", JSON.stringify(updatedHistory));
+        saveHistory(updatedHistory);
         setIsLoading(false);
         setError("You are offline. Showing local analysis only.");
         return;
@@ -244,10 +267,7 @@ export default function Home() {
         setResults(newResult);
         const updatedHistory = [newResult, ...history];
         setHistory(updatedHistory);
-        localStorage.setItem(
-          "abgAnalysisHistory",
-          JSON.stringify(updatedHistory)
-        );
+        saveHistory(updatedHistory);
       }
     } catch (e) {
       const errorMessage = e instanceof Error ? e.message : "An unknown error occurred during analysis.";
@@ -269,6 +289,7 @@ export default function Home() {
   const handleSignOut = async () => {
     if (auth) {
       await auth.signOut();
+      resetPage();
     }
   };
 

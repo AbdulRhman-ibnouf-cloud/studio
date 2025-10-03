@@ -181,6 +181,7 @@ export default function Home() {
   
   const displayResults = (result: AnalysisResult) => {
     setResults(result);
+    form.reset(result.inputs);
   }
 
   return (

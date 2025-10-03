@@ -2,8 +2,8 @@
   "placeholderImages": [
     {
       "id": "medical-chart-placeholder",
-      "description": "A modern blood gas analyzer in a lab setting.",
-      "imageUrl": "https://picsum.photos/seed/analyzer/600/400",
+      "description": "A refined image of a modern blood gas analyzer in a lab setting.",
+      "imageUrl": "https://images.unsplash.com/photo-1695048441386-0d6c4043d8c7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxibG9vZCUyMGFuYWx5emVyfGVufDB8fHx8MTc1OTQ4MDE3MXww&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "blood analyzer"
     }
   ]

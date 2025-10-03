@@ -66,6 +66,7 @@ export default function Home() {
   const [results, setResults] = useState<AnalysisResult | null>(null);
   const [history, setHistory] = useState<AnalysisResult[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -182,6 +183,7 @@ export default function Home() {
   const displayResults = (result: AnalysisResult) => {
     setResults(result);
     form.reset(result.inputs);
+    setIsHistoryOpen(false);
   }
 
   return (
@@ -195,7 +197,7 @@ export default function Home() {
               </h1>
             </div>
             <div className="flex items-center gap-4">
-               <Sheet>
+               <Sheet open={isHistoryOpen} onOpenChange={setIsHistoryOpen}>
                   <SheetTrigger asChild>
                     <Button variant="outline" size="icon">
                       <History className="h-5 w-5" />
@@ -388,5 +390,3 @@ export default function Home() {
     </>
   );
 }
-
-    

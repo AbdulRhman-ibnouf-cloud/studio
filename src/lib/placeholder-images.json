@@ -2,9 +2,9 @@
   "placeholderImages": [
     {
       "id": "medical-chart-placeholder",
-      "description": "A medical professional looking at a monitor in an ICU.",
-      "imageUrl": "https://picsum.photos/seed/nurse-monitor/600/400",
-      "imageHint": "nurse monitor"
+      "description": "A modern blood gas analyzer in a lab setting.",
+      "imageUrl": "https://picsum.photos/seed/analyzer/600/400",
+      "imageHint": "blood analyzer"
     }
   ]
 }

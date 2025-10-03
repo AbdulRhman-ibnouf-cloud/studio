@@ -3,7 +3,7 @@
 
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
-import { Sun, Moon, Cloud, Star } from 'lucide-react';
+import { Sun, Moon, Cloud, Star, Cloudy, Asterisk } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
@@ -64,7 +64,7 @@ export function ThemeToggleSwitch() {
               exit="exit"
               className="absolute inset-0 flex items-center justify-center"
             >
-              <Cloud className="absolute h-5 w-5 text-white" style={{ left: '60%' }} />
+              <Cloudy className="absolute h-5 w-5 text-white" style={{ left: '60%' }} />
               <Cloud className="absolute h-4 w-4 text-white" style={{ left: '45%', top: '60%' }} />
             </motion.div>
           )}
@@ -80,8 +80,8 @@ export function ThemeToggleSwitch() {
               className="absolute inset-0 flex items-center justify-center"
             >
               <Star className="absolute h-3 w-3 text-yellow-300" style={{ left: '20%', top: '30%' }} />
-              <Star className="absolute h-2 w-2 text-yellow-300" style={{ left: '35%', top: '60%' }} />
-              <Star className="absolute h-1 w-1 text-yellow-300" style={{ left: '25%', top: '15%' }} />
+              <Asterisk className="absolute h-4 w-4 text-yellow-300" style={{ left: '35%', top: '60%' }} />
+              <Star className="absolute h-2 w-2 text-yellow-300" style={{ left: '25%', top: '15%' }} />
             </motion.div>
           )}
         </AnimatePresence>

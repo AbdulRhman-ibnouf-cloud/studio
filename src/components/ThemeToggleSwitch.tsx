@@ -83,23 +83,23 @@ export function ThemeToggleSwitch() {
           <AnimatePresence mode="wait">
             {isDark ? (
               <motion.div
-                key="sun"
+                key="moon"
                 initial={{ rotate: 90, scale: 0 }}
                 animate={{ rotate: 0, scale: 1, transition: spring }}
                 exit={{ rotate: 90, scale: 0, transition: spring }}
                 className="absolute"
               >
-                <Sun className="h-6 w-6 text-white" />
+                <Moon className="h-6 w-6 text-blue-500" />
               </motion.div>
             ) : (
               <motion.div
-                key="moon"
+                key="sun"
                 initial={{ rotate: -90, scale: 0 }}
                 animate={{ rotate: 0, scale: 1, transition: spring }}
                 exit={{ rotate: 180, scale: 0, transition: spring }}
                 className="absolute"
               >
-                <Moon className="h-6 w-6 text-blue-500" />
+                <Sun className="h-6 w-6 text-yellow-400" />
               </motion.div>
             )}
           </AnimatePresence>

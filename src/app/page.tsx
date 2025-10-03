@@ -23,6 +23,7 @@ import {
   Camera,
 } from "lucide-react";
 import { useAuth, useUser } from "@/firebase";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -247,6 +248,15 @@ export default function Home() {
       resetPage();
     }
   };
+  
+  const getInitials = (name: string | null | undefined) => {
+    if (!name) return 'G';
+    const names = name.split(' ');
+    if (names.length > 1) {
+      return `${names[0][0]}${names[names.length - 1][0]}`.toUpperCase();
+    }
+    return name.substring(0, 2).toUpperCase();
+  };
 
   if (isUserLoading) {
     return (
@@ -332,7 +342,19 @@ export default function Home() {
                     <SheetHeader>
                       <SheetTitle>Settings</SheetTitle>
                     </SheetHeader>
-                    <div className="py-4 space-y-4 flex flex-col items-center">
+                    <div className="py-4 space-y-6 flex flex-col items-center">
+                      <div className="flex flex-col items-center gap-4">
+                        <Avatar className="h-20 w-20">
+                           <AvatarImage src={user.photoURL || undefined} alt={user.displayName || 'User'} />
+                           <AvatarFallback>{getInitials(user.displayName || user.email)}</AvatarFallback>
+                        </Avatar>
+                        <div className="text-center">
+                           <p className="font-semibold text-lg">{user.displayName || user.email}</p>
+                           <p className="text-sm text-muted-foreground">
+                            {user.isAnonymous ? "Guest Account" : (user.email ? "" : "Signed In")}
+                           </p>
+                        </div>
+                      </div>
                       <ThemeToggleSwitch />
                       <Button variant="destructive" onClick={handleSignOut} className="w-full">
                         <LogOut className="mr-2 h-4 w-4" />

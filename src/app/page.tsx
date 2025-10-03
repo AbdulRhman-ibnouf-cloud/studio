@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -119,19 +120,19 @@ export default function Home() {
 
   useEffect(() => {
     if (user) {
-      resetPage();
-      const savedHistory = localStorage.getItem(`abgAnalysisHistory_${user.uid}`);
-      if (savedHistory) {
-        setHistory(JSON.parse(savedHistory));
-      } else {
-        setHistory([]);
+      // Don't reset the page if user is already logged in and we are just re-rendering
+      if (history.length === 0) {
+          const savedHistory = localStorage.getItem(`abgAnalysisHistory_${user.uid}`);
+          if (savedHistory) {
+              setHistory(JSON.parse(savedHistory));
+          }
       }
     } else if (!isUserLoading) {
       // Clear history only when loading is finished and there's no user
       setHistory([]);
       resetPage();
     }
-  }, [user, isUserLoading, resetPage]);
+  }, [user, isUserLoading, resetPage, history.length]);
 
 
   useEffect(() => {
@@ -290,6 +291,8 @@ export default function Home() {
   const handleSignOut = async () => {
     if (auth) {
       await auth.signOut();
+      resetPage();
+      setHistory([]);
     }
   };
 
@@ -358,43 +361,93 @@ export default function Home() {
                 ABG Insights
               </h1>
             </div>
-            <div className="flex items-center gap-4">
-                <Sheet open={isHistoryOpen} onOpenChange={setIsHistoryOpen}>
+            <div className="flex items-center gap-2">
+                <Button variant="ghost" size="icon" onClick={() => setIsHistoryOpen(true)}>
+                  <History className="h-5 w-5" />
+                  <span className="sr-only">View History</span>
+                </Button>
+                <Sheet open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
+                  <SheetTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                    >
+                      <Settings className="h-5 w-5" />
+                      <span className="sr-only">Open Settings</span>
+                    </Button>
+                  </SheetTrigger>
                   <SheetContent>
                     <SheetHeader>
-                      <SheetTitle>Analysis History</SheetTitle>
+                      <SheetTitle>Settings</SheetTitle>
                     </SheetHeader>
-                    <ScrollArea className="h-[calc(100%-4rem)]">
-                      <div className="space-y-4 py-4">
-                        {history.length > 0 ? (
-                          history.map((item, index) => (
-                            <Card key={index} className="cursor-pointer hover:bg-muted/50" onClick={() => displayResults(item)}>
-                              <CardHeader>
-                                <CardTitle className="text-base">
-                                  {new Date(item.timestamp).toLocaleString()}
-                                </CardTitle>
-                                <CardDescription>
-                                  pH: {item.inputs.pH}, pCO₂: {item.inputs.pCO2}, HCO₃⁻: {item.inputs.HCO3}
-                                </CardDescription>
-                              </CardHeader>
-                              <CardContent>
-                                <p className="truncate text-sm text-muted-foreground">{item.interpretation}</p>
-                              </CardContent>
-                            </Card>
-                          ))
-                        ) : (
-                          <p className="text-center text-muted-foreground">
-                            No history yet.
-                          </p>
-                        )}
+                    <div className="py-4">
+                      <div className="flex flex-col space-y-4">
+                        <div className="flex flex-col space-y-2">
+                          <Label>Theme</Label>
+                          <div className="flex justify-around rounded-lg bg-muted p-1">
+                            <Button
+                              variant={theme === 'light' ? 'secondary' : 'ghost'}
+                              size="sm"
+                              className="flex-1"
+                              onClick={() => setTheme("light")}
+                            >
+                              <Sun className="mr-2 h-4 w-4" /> Light
+                            </Button>
+                            <Button
+                              variant={theme === 'dark' ? 'secondary' : 'ghost'}
+                              size="sm"
+                              className="flex-1"
+                              onClick={() => setTheme("dark")}
+                            >
+                              <Moon className="mr-2 h-4 w-4" /> Dark
+                            </Button>
+                          </div>
+                        </div>
+                        <Button variant="destructive" onClick={handleSignOut}>
+                          <LogOut className="mr-2 h-4 w-4" />
+                          Sign Out
+                        </Button>
                       </div>
-                    </ScrollArea>
+                    </div>
                   </SheetContent>
                 </Sheet>
             </div>
         </header>
 
         <main className="container mx-auto px-4 py-8 md:py-12">
+          <Sheet open={isHistoryOpen} onOpenChange={setIsHistoryOpen}>
+            <SheetContent>
+              <SheetHeader>
+                <SheetTitle>Analysis History</SheetTitle>
+              </SheetHeader>
+              <ScrollArea className="h-[calc(100%-4rem)]">
+                <div className="space-y-4 py-4">
+                  {history.length > 0 ? (
+                    history.map((item, index) => (
+                      <Card key={index} className="cursor-pointer hover:bg-muted/50" onClick={() => displayResults(item)}>
+                        <CardHeader>
+                          <CardTitle className="text-base">
+                            {new Date(item.timestamp).toLocaleString()}
+                          </CardTitle>
+                          <CardDescription>
+                            pH: {item.inputs.pH}, pCO₂: {item.inputs.pCO2}, HCO₃⁻: {item.inputs.HCO3}
+                          </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                          <p className="truncate text-sm text-muted-foreground">{item.interpretation}</p>
+                        </CardContent>
+                      </Card>
+                    ))
+                  ) : (
+                    <p className="text-center text-muted-foreground">
+                      No history yet.
+                    </p>
+                  )}
+                </div>
+              </ScrollArea>
+            </SheetContent>
+          </Sheet>
+
           <header className="text-center mb-12">
             <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
               Your AI-powered assistant for rapid Arterial Blood Gas analysis.
@@ -546,63 +599,6 @@ export default function Home() {
           </div>
         </main>
       </div>
-
-      <Sheet open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
-        <SheetTrigger asChild>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="fixed bottom-4 right-4 h-14 w-14 rounded-full shadow-lg bg-primary text-primary-foreground hover:bg-primary/90"
-          >
-            <Settings className="h-6 w-6" />
-            <span className="sr-only">Open Settings</span>
-          </Button>
-        </SheetTrigger>
-        <SheetContent side="bottom">
-          <SheetHeader>
-            <SheetTitle>Settings</SheetTitle>
-          </SheetHeader>
-          <div className="py-4">
-            <div className="flex flex-col space-y-4">
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setIsHistoryOpen(true);
-                  setIsSettingsOpen(false);
-                }}
-              >
-                <History className="mr-2 h-4 w-4" />
-                View History
-              </Button>
-              <div className="flex flex-col space-y-2">
-                <Label>Theme</Label>
-                <div className="flex justify-around rounded-lg bg-muted p-1">
-                  <Button
-                    variant={theme === 'light' ? 'secondary' : 'ghost'}
-                    size="sm"
-                    className="flex-1"
-                    onClick={() => setTheme("light")}
-                  >
-                    <Sun className="mr-2 h-4 w-4" /> Light
-                  </Button>
-                  <Button
-                    variant={theme === 'dark' ? 'secondary' : 'ghost'}
-                    size="sm"
-                    className="flex-1"
-                    onClick={() => setTheme("dark")}
-                  >
-                    <Moon className="mr-2 h-4 w-4" /> Dark
-                  </Button>
-                </div>
-              </div>
-              <Button variant="destructive" onClick={handleSignOut}>
-                <LogOut className="mr-2 h-4 w-4" />
-                Sign Out
-              </Button>
-            </div>
-          </div>
-        </SheetContent>
-      </Sheet>
     </>
   );
 }

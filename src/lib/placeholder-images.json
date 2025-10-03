@@ -2,9 +2,9 @@
   "placeholderImages": [
     {
       "id": "medical-chart-placeholder",
-      "description": "A modern hospital ICU room with a mechanical ventilator.",
-      "imageUrl": "https://picsum.photos/seed/ventilator/600/400",
-      "imageHint": "mechanical ventilator"
+      "description": "A medical professional looking at a monitor in an ICU.",
+      "imageUrl": "https://picsum.photos/seed/nurse-monitor/600/400",
+      "imageHint": "nurse monitor"
     }
   ]
 }

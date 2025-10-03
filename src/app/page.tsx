@@ -94,7 +94,6 @@ export default function Home() {
   const [history, setHistory] = useState<AnalysisResult[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isScanDialogOpen, setIsScanDialogOpen] = useState(false);
 
   const defaultFormValues = {
@@ -366,7 +365,7 @@ export default function Home() {
                   <History className="h-5 w-5" />
                   <span className="sr-only">View History</span>
                 </Button>
-                <Sheet open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
+                <Sheet>
                   <SheetTrigger asChild>
                     <Button
                       variant="ghost"

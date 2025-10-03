@@ -56,7 +56,6 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Label } from "@/components/ui/label";
 import { useTheme } from "next-themes";
 import { localAbgAnalysis } from "@/lib/local-abg-analysis";
 import { AbgScanDialog } from "@/components/AbgScanDialog";
@@ -87,7 +86,7 @@ function MarkdownContent({ content }: { content: string | undefined }) {
 export default function Home() {
   const { user, isUserLoading } = useUser();
   const auth = useAuth();
-  const { theme, setTheme } = useTheme();
+  const { setTheme } = useTheme();
   const [isLoading, setIsLoading] = useState(false);
   const [isScanning, setIsScanning] = useState(false);
   const [results, setResults] = useState<AnalysisResult | null>(null);
@@ -119,7 +118,6 @@ export default function Home() {
 
   useEffect(() => {
     if (user) {
-      // Don't reset the page if user is already logged in and we are just re-rendering
       if (history.length === 0) {
           const savedHistory = localStorage.getItem(`abgAnalysisHistory_${user.uid}`);
           if (savedHistory) {
@@ -127,7 +125,6 @@ export default function Home() {
           }
       }
     } else if (!isUserLoading) {
-      // Clear history only when loading is finished and there's no user
       setHistory([]);
       resetPage();
     }
@@ -290,8 +287,6 @@ export default function Home() {
   const handleSignOut = async () => {
     if (auth) {
       await auth.signOut();
-      resetPage();
-      setHistory([]);
     }
   };
 
@@ -379,34 +374,19 @@ export default function Home() {
                     <SheetHeader>
                       <SheetTitle>Settings</SheetTitle>
                     </SheetHeader>
-                    <div className="py-4">
-                      <div className="flex flex-col space-y-4">
-                        <div className="flex flex-col space-y-2">
-                          <Label>Theme</Label>
-                          <div className="flex justify-around rounded-lg bg-muted p-1">
-                            <Button
-                              variant={theme === 'light' ? 'secondary' : 'ghost'}
-                              size="sm"
-                              className="flex-1"
-                              onClick={() => setTheme("light")}
-                            >
-                              <Sun className="mr-2 h-4 w-4" /> Light
-                            </Button>
-                            <Button
-                              variant={theme === 'dark' ? 'secondary' : 'ghost'}
-                              size="sm"
-                              className="flex-1"
-                              onClick={() => setTheme("dark")}
-                            >
-                              <Moon className="mr-2 h-4 w-4" /> Dark
-                            </Button>
-                          </div>
-                        </div>
-                        <Button variant="destructive" onClick={handleSignOut}>
-                          <LogOut className="mr-2 h-4 w-4" />
-                          Sign Out
-                        </Button>
-                      </div>
+                    <div className="py-4 space-y-4">
+                      <Button
+                        variant="ghost"
+                        onClick={() => setTheme(document.documentElement.classList.contains('dark') ? "light" : "dark")}
+                      >
+                        <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+                        <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                        <span className="sr-only">Toggle theme</span>
+                      </Button>
+                      <Button variant="destructive" onClick={handleSignOut} className="w-full">
+                        <LogOut className="mr-2 h-4 w-4" />
+                        Sign Out
+                      </Button>
                     </div>
                   </SheetContent>
                 </Sheet>
@@ -601,3 +581,5 @@ export default function Home() {
     </>
   );
 }
+
+    

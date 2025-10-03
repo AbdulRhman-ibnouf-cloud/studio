@@ -62,15 +62,13 @@ export function Login() {
     setLoading(action);
     setError(null);
     const onError = (e: any) => {
-      let message = 'An unexpected error occurred.';
+      let message = 'An unexpected error occurred. Please try again.';
       if (e.code === 'auth/weak-password') {
         message = 'Password should be at least 6 characters.';
       } else if (e.code === 'auth/invalid-credential' || e.code === 'auth/wrong-password' || e.code === 'auth/user-not-found') {
         message = 'Invalid credentials. Please check your email and password and try again.';
       } else if (e.code === 'auth/email-already-in-use') {
         message = 'This email address is already in use by another account.';
-      } else if (e.message) {
-        message = e.message;
       }
       setError(message);
       setLoading(null);
@@ -86,6 +84,14 @@ export function Login() {
       initiateEmailSignUp(auth, email, password, onError);
     }
   };
+  
+  const handleTabChange = (value: string) => {
+    setError(null);
+    // Optionally reset email/password fields
+    // setEmail('');
+    // setPassword('');
+  };
+
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background p-4">
@@ -102,7 +108,7 @@ export function Login() {
         </p>
       </div>
 
-      <Tabs defaultValue="sign-in" className="w-full max-w-md">
+      <Tabs defaultValue="sign-in" className="w-full max-w-md" onValueChange={handleTabChange}>
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="sign-in">Sign In</TabsTrigger>
           <TabsTrigger value="sign-up">Sign Up</TabsTrigger>

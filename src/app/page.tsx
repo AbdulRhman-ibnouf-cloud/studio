@@ -4,8 +4,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import type { z } from "zod";
 import React, { useState, useEffect } from "react";
-import Image from "next/image";
-import { PlaceHolderImages } from "@/lib/placeholder-images";
 import {
   Beaker,
   Stethoscope,
@@ -56,10 +54,6 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const [results, setResults] = useState<Results | null>(null);
   const [error, setError] = useState<string | null>(null);
-
-  const placeholderImage = PlaceHolderImages.find(
-    (img) => img.id === "medical-chart-placeholder"
-  );
 
   const form = useForm<z.infer<typeof AbgFormSchema>>({
     resolver: zodResolver(AbgFormSchema),
@@ -260,18 +254,7 @@ export default function Home() {
 
                 {!isLoading && !results && !error && (
                   <Card className="flex flex-col items-center justify-center text-center p-8 h-full min-h-[50vh] shadow-none border-dashed">
-                    {placeholderImage && (
-                      <div className="mb-4 rounded-lg overflow-hidden aspect-video relative w-full max-w-md">
-                        <Image
-                          src={placeholderImage.imageUrl}
-                          alt={placeholderImage.description}
-                          fill
-                          className="object-cover"
-                          data-ai-hint={placeholderImage.imageHint}
-                        />
-                      </div>
-                    )}
-                    <Lightbulb className="h-10 w-10 text-muted-foreground mb-4 mt-8" />
+                    <Beaker className="h-24 w-24 text-muted-foreground/50 mb-8" />
                     <h3 className="text-xl font-semibold text-foreground">
                       Awaiting Analysis
                     </h3>

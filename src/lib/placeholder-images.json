@@ -3,7 +3,7 @@
     {
       "id": "medical-chart-placeholder",
       "description": "A modern hospital ICU room with medical equipment.",
-      "imageUrl": "https://images.unsplash.com/photo-1581091224002-0d04b123c5b4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxJQ1UlMjByb29tfGVufDB8fHx8MTc2MTE4NzI2MHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://picsum.photos/seed/icu/600/400",
       "imageHint": "ICU room"
     }
   ]

@@ -95,6 +95,11 @@ export default function Home() {
   });
 
   async function onSubmit(values: z.infer<typeof AbgFormSchema>) {
+    if (typeof window !== 'undefined' && !window.navigator.onLine) {
+        setError("You are offline. Please connect to the internet to perform a new analysis.");
+        return;
+    }
+
     if (!user) {
       setError("You must be logged in to perform an analysis.");
       return;
@@ -123,13 +128,8 @@ export default function Home() {
         );
       }
     } catch (e) {
-      // Check if navigator is offline
-      if (typeof window !== 'undefined' && !window.navigator.onLine) {
-        setError("You are offline. Please connect to the internet to perform a new analysis.");
-      } else {
-         const errorMessage = e instanceof Error ? e.message : "An unknown error occurred during analysis.";
-         setError(`Sorry, we couldn't complete the analysis. ${errorMessage}`);
-      }
+      const errorMessage = e instanceof Error ? e.message : "An unknown error occurred during analysis.";
+      setError(`Sorry, we couldn't complete the analysis. ${errorMessage}`);
     }
 
 

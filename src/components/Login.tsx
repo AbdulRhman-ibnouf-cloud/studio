@@ -76,9 +76,6 @@ export function Login() {
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background p-4">
-       <div className="absolute top-4 right-4">
-          <ThemeToggleSwitch />
-        </div>
       <div className="text-center mb-8">
         <div className="inline-flex items-center gap-3">
           <Beaker className="h-10 w-10 text-primary" />
@@ -248,6 +245,9 @@ export function Login() {
           </Card>
         </TabsContent>
       </Tabs>
+      <div className="mt-8">
+        <ThemeToggleSwitch />
+      </div>
     </div>
   );
 }

@@ -66,7 +66,7 @@ type AnalysisResult = Omit<AbgFormState, "error"> & {
 export default function Home() {
   const { user, isUserLoading } = useUser();
   const auth = useAuth();
-  const { setTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
   const [isLoading, setIsLoading] = useState(false);
   const [results, setResults] = useState<AnalysisResult | null>(null);
   const [history, setHistory] = useState<AnalysisResult[]>([]);
@@ -411,10 +411,10 @@ export default function Home() {
                 View History
               </Button>
               <div className="flex flex-col space-y-2">
-                <Label>Appearance</Label>
+                <Label>Theme</Label>
                 <div className="flex justify-around rounded-lg bg-muted p-1">
                   <Button
-                    variant="ghost"
+                    variant={theme === 'light' ? 'secondary' : 'ghost'}
                     size="sm"
                     className="flex-1"
                     onClick={() => setTheme("light")}
@@ -422,7 +422,7 @@ export default function Home() {
                     <Sun className="mr-2 h-4 w-4" /> Light
                   </Button>
                   <Button
-                    variant="ghost"
+                    variant={theme === 'dark' ? 'secondary' : 'ghost'}
                     size="sm"
                     className="flex-1"
                     onClick={() => setTheme("dark")}
@@ -442,5 +442,3 @@ export default function Home() {
     </>
   );
 }
-
-    

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -32,7 +33,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { ThemeToggle } from './ThemeToggle';
+import { ThemeToggleSwitch } from './ThemeToggleSwitch';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { TriangleAlert } from 'lucide-react';
 
@@ -75,6 +76,9 @@ export function Login() {
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background p-4">
+       <div className="absolute top-4 right-4">
+          <ThemeToggleSwitch />
+        </div>
       <div className="text-center mb-8">
         <div className="inline-flex items-center gap-3">
           <Beaker className="h-10 w-10 text-primary" />
@@ -103,7 +107,6 @@ export function Login() {
                           Choose your preferred sign-in method below.
                       </CardDescription>
                   </div>
-                  <ThemeToggle />
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -198,7 +201,6 @@ export function Login() {
                       Create a new account to save your analyses.
                     </CardDescription>
                   </div>
-                  <ThemeToggle />
               </div>
             </CardHeader>
             <CardContent className="space-y-4">

@@ -75,9 +75,6 @@ export function Login() {
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background p-4">
-      <div className="absolute top-4 right-4">
-        <ThemeToggle />
-      </div>
       <div className="text-center mb-8">
         <div className="inline-flex items-center gap-3">
           <Beaker className="h-10 w-10 text-primary" />
@@ -99,10 +96,15 @@ export function Login() {
         <TabsContent value="sign-in">
           <Card>
             <CardHeader>
-              <CardTitle>Sign In</CardTitle>
-              <CardDescription>
-                Choose your preferred sign-in method below.
-              </CardDescription>
+              <div className="flex justify-between items-start">
+                  <div>
+                      <CardTitle>Sign In</CardTitle>
+                      <CardDescription>
+                          Choose your preferred sign-in method below.
+                      </CardDescription>
+                  </div>
+                  <ThemeToggle />
+              </div>
             </CardHeader>
             <CardContent className="space-y-4">
               {error && (
@@ -189,10 +191,15 @@ export function Login() {
         <TabsContent value="sign-up">
           <Card>
             <CardHeader>
-              <CardTitle>Sign Up</CardTitle>
-              <CardDescription>
-                Create a new account to save your analyses.
-              </CardDescription>
+               <div className="flex justify-between items-start">
+                  <div>
+                    <CardTitle>Sign Up</CardTitle>
+                    <CardDescription>
+                      Create a new account to save your analyses.
+                    </CardDescription>
+                  </div>
+                  <ThemeToggle />
+              </div>
             </CardHeader>
             <CardContent className="space-y-4">
               {error && (

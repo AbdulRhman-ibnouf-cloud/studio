@@ -31,16 +31,61 @@ export function ThemeToggleSwitch() {
     damping: 30,
   };
 
+  const cloudVariants = {
+    initial: { scale: 0, opacity: 0, x: -50 },
+    animate: { scale: 1, opacity: 1, x: 0, transition: { ...spring, delay: 0.2 } },
+    exit: { scale: 0, opacity: 0, x: 50, transition: { ...spring, duration: 0.4 } },
+  };
+
+  const starVariants = {
+    initial: { scale: 0, opacity: 0, x: 50 },
+    animate: { scale: 1, opacity: 1, x: 0, transition: { ...spring, delay: 0.2 } },
+    exit: { scale: 0, opacity: 0, x: -50, transition: { ...spring, duration: 0.4 } },
+  }
+
   return (
     <div className="flex items-center justify-center">
       <button
         onClick={toggleTheme}
         className={cn(
-          'relative flex h-12 w-28 cursor-pointer items-center rounded-full p-1 transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+          'relative flex h-12 w-28 cursor-pointer items-center rounded-full p-1 transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background overflow-hidden',
           isDark ? 'bg-zinc-800' : 'bg-sky-400'
         )}
         aria-label={`Switch to ${isDark ? 'light' : 'dark'} mode`}
       >
+        {/* Animated Background Elements */}
+        <AnimatePresence>
+          {!isDark && (
+            <motion.div
+              key="clouds"
+              variants={cloudVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              className="absolute left-4 w-full h-full"
+            >
+              <Cloud className="absolute h-5 w-5 text-white" style={{ top: '6px', left: '45px' }} />
+              <Cloud className="absolute h-4 w-4 text-white" style={{ top: '18px', left: '30px' }} />
+            </motion.div>
+          )}
+        </AnimatePresence>
+        <AnimatePresence>
+          {isDark && (
+            <motion.div
+              key="stars"
+              variants={starVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              className="absolute right-4 w-full h-full"
+            >
+              <Star className="absolute h-3 w-3 text-yellow-300" style={{ top: '8px', left: '15px' }} />
+              <Star className="absolute h-2 w-2 text-yellow-300" style={{ top: '20px', left: '25px' }} />
+              <Star className="absolute h-1 w-1 text-yellow-300" style={{ top: '10px', left: '40px' }} />
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Bouncy Thumb */}
         <motion.div
           layout
@@ -72,37 +117,6 @@ export function ThemeToggleSwitch() {
             )}
           </AnimatePresence>
         </motion.div>
-
-        {/* Background Decorations */}
-        <AnimatePresence>
-        {isDark && (
-            <motion.div
-                key="stars"
-                initial={{ opacity: 0, scale: 0.5 }}
-                animate={{ opacity: 1, scale: 1, transition: { delay: 0.1, ...spring } }}
-                exit={{ opacity: 0, scale: 0.5, transition: spring }}
-                className="absolute left-4"
-            >
-                <Star className="absolute h-3 w-3 text-yellow-300" style={{ top: '-8px', left: '0px' }} />
-                <Star className="absolute h-2 w-2 text-yellow-300" style={{ top: '10px', left: '10px' }} />
-                <Star className="absolute h-1 w-1 text-yellow-300" style={{ top: '-2px', left: '25px' }}/>
-            </motion.div>
-        )}
-        </AnimatePresence>
-        <AnimatePresence>
-        {!isDark && (
-            <motion.div
-                key="clouds"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0, transition: { delay: 0.1, ...spring } }}
-                exit={{ opacity: 0, x: 20, transition: spring }}
-                className="absolute right-4"
-            >
-                <Cloud className="absolute h-5 w-5 text-white" style={{ top: '-6px', right: '10px' }} />
-                <Cloud className="absolute h-4 w-4 text-white" style={{ top: '8px', right: '0px' }} />
-            </motion.div>
-        )}
-        </AnimatePresence>
       </button>
     </div>
   );

@@ -20,8 +20,6 @@ import {
   LogOut,
   History,
   Settings,
-  Sun,
-  Moon,
   Camera,
 } from "lucide-react";
 import { useAuth, useUser } from "@/firebase";
@@ -56,10 +54,10 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useTheme } from "next-themes";
 import { localAbgAnalysis } from "@/lib/local-abg-analysis";
 import { AbgScanDialog } from "@/components/AbgScanDialog";
 import { extractAbgFromImage } from "@/ai/flows/extract-abg-from-image";
+import { ThemeToggleSwitch } from "@/components/ThemeToggleSwitch";
 
 type AnalysisResult = Omit<AbgFormState, "error"> & {
   timestamp: string;
@@ -86,7 +84,6 @@ function MarkdownContent({ content }: { content: string | undefined }) {
 export default function Home() {
   const { user, isUserLoading } = useUser();
   const auth = useAuth();
-  const { setTheme } = useTheme();
   const [isLoading, setIsLoading] = useState(false);
   const [isScanning, setIsScanning] = useState(false);
   const [results, setResults] = useState<AnalysisResult | null>(null);
@@ -287,6 +284,7 @@ export default function Home() {
   const handleSignOut = async () => {
     if (auth) {
       await auth.signOut();
+      resetPage();
     }
   };
 
@@ -374,15 +372,8 @@ export default function Home() {
                     <SheetHeader>
                       <SheetTitle>Settings</SheetTitle>
                     </SheetHeader>
-                    <div className="py-4 space-y-4">
-                      <Button
-                        variant="ghost"
-                        onClick={() => setTheme(document.documentElement.classList.contains('dark') ? "light" : "dark")}
-                      >
-                        <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-                        <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-                        <span className="sr-only">Toggle theme</span>
-                      </Button>
+                    <div className="py-4 space-y-4 flex flex-col items-center">
+                      <ThemeToggleSwitch />
                       <Button variant="destructive" onClick={handleSignOut} className="w-full">
                         <LogOut className="mr-2 h-4 w-4" />
                         Sign Out

@@ -57,11 +57,29 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Label } from "@/components/ui/label";
 import { useTheme } from "next-themes";
+import { localAbgAnalysis } from "@/lib/local-abg-analysis";
 
 type AnalysisResult = Omit<AbgFormState, "error"> & {
   timestamp: string;
   inputs: z.infer<typeof AbgFormSchema>;
 };
+
+function MarkdownContent({ content }: { content: string | undefined }) {
+  if (!content) {
+    return null;
+  }
+  const items = content.split('\n').filter(line => line.trim().startsWith('- '));
+  if (items.length > 0) {
+    return (
+      <ul className="list-disc space-y-2 pl-5 text-foreground/90">
+        {items.map((item, index) => (
+          <li key={index}>{item.substring(2)}</li>
+        ))}
+      </ul>
+    );
+  }
+  return <p className="whitespace-pre-wrap text-foreground/90">{content}</p>;
+}
 
 export default function Home() {
   const { user, isUserLoading } = useUser();
@@ -135,30 +153,61 @@ export default function Home() {
   });
 
   async function onSubmit(values: z.infer<typeof AbgFormSchema>) {
+    setIsLoading(true);
+    setResults(null);
+    setError(null);
+  
+    // Perform local analysis first
+    const localResult = localAbgAnalysis(values);
+  
     if (typeof window !== 'undefined' && !window.navigator.onLine) {
-        setError("You are offline. Please connect to the internet to perform a new analysis.");
+        // If offline, use only local results
+        const newResult: AnalysisResult = {
+          interpretation: localResult.interpretation,
+          possibleConditions: "Offline: AI-powered suggestions unavailable.",
+          treatmentRecommendations: "Offline: AI-powered recommendations unavailable.",
+          timestamp: new Date().toISOString(),
+          inputs: values,
+        };
+        setResults(newResult);
+        const updatedHistory = [newResult, ...history];
+        setHistory(updatedHistory);
+        localStorage.setItem("abgAnalysisHistory", JSON.stringify(updatedHistory));
+        setIsLoading(false);
+        setError("You are offline. Showing local analysis only.");
         return;
     }
 
     if (!user) {
       setError("You must be logged in to perform an analysis.");
+      setIsLoading(false);
       return;
     }
-    setIsLoading(true);
-    setResults(null);
-    setError(null);
 
+    // If online, proceed with AI analysis
     try {
       const response = await analyzeAbg(values);
 
       if ("error" in response) {
         setError(response.error);
+        // Fallback to local analysis on AI error
+        setResults({
+            interpretation: localResult.interpretation,
+            possibleConditions: 'AI analysis failed.',
+            treatmentRecommendations: 'AI analysis failed.',
+            timestamp: new Date().toISOString(),
+            inputs: values
+        });
+
       } else {
         const newResult: AnalysisResult = {
           ...response,
           timestamp: new Date().toISOString(),
           inputs: values,
         };
+        // We can choose to blend local and AI results here if desired
+        // For now, we prefer the more detailed AI result when online
+        newResult.interpretation = `${localResult.interpretation}. ${response.interpretation || ''}`.trim()
         setResults(newResult);
         const updatedHistory = [newResult, ...history];
         setHistory(updatedHistory);
@@ -170,6 +219,14 @@ export default function Home() {
     } catch (e) {
       const errorMessage = e instanceof Error ? e.message : "An unknown error occurred during analysis.";
       setError(`Sorry, we couldn't complete the analysis. ${errorMessage}`);
+       // Fallback to local analysis on exception
+       setResults({
+        interpretation: localResult.interpretation,
+        possibleConditions: 'AI analysis failed.',
+        treatmentRecommendations: 'AI analysis failed.',
+        timestamp: new Date().toISOString(),
+        inputs: values
+    });
     }
 
 
@@ -408,9 +465,7 @@ export default function Home() {
                               </CardTitle>
                             </CardHeader>
                             <CardContent>
-                              <p className="whitespace-pre-wrap text-foreground/90">
-                                {card.content}
-                              </p>
+                               <MarkdownContent content={card.content} />
                             </CardContent>
                           </Card>
                         )

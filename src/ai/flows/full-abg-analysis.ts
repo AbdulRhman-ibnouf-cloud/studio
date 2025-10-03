@@ -24,7 +24,7 @@ export type FullAbgAnalysisInput = z.infer<typeof FullAbgAnalysisInputSchema>;
 const FullAbgAnalysisOutputSchema = z.object({
   interpretation: z.string().describe('An initial interpretation of the ABG results based on the provided values.'),
   possibleConditions: z.string().describe('A list of possible underlying medical conditions that could explain the ABG interpretation.'),
-  treatmentRecommendations: z.string().describe('Suggested initial steps or potential treatments for the identified conditions.'),
+  treatmentRecommendations: z.string().describe("Suggested initial steps or potential treatments for the identified conditions, formatted as a Markdown bulleted list. Each recommendation should be a separate bullet point (e.g., '- Recommendation 1\\n- Recommendation 2')."),
 });
 
 export type FullAbgAnalysisOutput = z.infer<typeof FullAbgAnalysisOutputSchema>;
@@ -49,7 +49,7 @@ const prompt = ai.definePrompt({
   Your tasks are:
   1.  **Interpretation**: Provide a concise interpretation of the patient's acid-base balance.
   2.  **Possible Conditions**: Suggest a list of possible underlying medical conditions that could explain these results.
-  3.  **Treatment Recommendations**: Based on the interpretation and possible conditions, suggest initial steps or potential treatments.
+  3.  **Treatment Recommendations**: Based on the interpretation and possible conditions, suggest initial steps or potential treatments. Format these recommendations as a Markdown bulleted list.
 
   Return the response in the specified JSON format with the fields: 'interpretation', 'possibleConditions', and 'treatmentRecommendations'.
   `,

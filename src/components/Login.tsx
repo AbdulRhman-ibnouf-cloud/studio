@@ -62,7 +62,17 @@ export function Login() {
     setLoading(action);
     setError(null);
     const onError = (e: any) => {
-      setError(e.message || 'An unexpected error occurred.');
+      let message = 'An unexpected error occurred.';
+      if (e.code === 'auth/weak-password') {
+        message = 'Password should be at least 6 characters.';
+      } else if (e.code === 'auth/invalid-credential' || e.code === 'auth/wrong-password' || e.code === 'auth/user-not-found') {
+        message = 'Invalid credentials. Please check your email and password and try again.';
+      } else if (e.code === 'auth/email-already-in-use') {
+        message = 'This email address is already in use by another account.';
+      } else if (e.message) {
+        message = e.message;
+      }
+      setError(message);
       setLoading(null);
     }
     

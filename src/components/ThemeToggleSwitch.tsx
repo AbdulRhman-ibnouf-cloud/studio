@@ -14,7 +14,7 @@ export function ThemeToggleSwitch() {
   }, []);
 
   if (!mounted) {
-    // Avoid rendering mismatch during server-side rendering
+    // Avoid rendering mismatch during server-side rendering and provide a placeholder.
     return <div className="w-40 h-10 rounded-full bg-muted animate-pulse" />;
   }
   
@@ -22,7 +22,7 @@ export function ThemeToggleSwitch() {
 
   return (
     <div className="flex items-center justify-center gap-4">
-      <span className={`font-semibold ${!isDark ? 'text-foreground' : 'text-muted-foreground'}`}>
+      <span className={`font-semibold transition-colors duration-300 ${!isDark ? 'text-foreground' : 'text-muted-foreground'}`}>
         Light
       </span>
       <button
@@ -32,7 +32,7 @@ export function ThemeToggleSwitch() {
       >
         <div
           className={`absolute flex h-7 w-7 transform items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-transform duration-300 ease-in-out ${
-            isDark ? 'translate-x-[calc(100%+2px)]' : 'translate-x-[2px]'
+            isDark ? 'translate-x-9' : 'translate-x-1'
           }`}
         >
           {isDark ? (
@@ -42,7 +42,7 @@ export function ThemeToggleSwitch() {
           )}
         </div>
       </button>
-      <span className={`font-semibold ${isDark ? 'text-foreground' : 'text-muted-foreground'}`}>
+      <span className={`font-semibold transition-colors duration-300 ${isDark ? 'text-foreground' : 'text-muted-foreground'}`}>
         Dark
       </span>
     </div>

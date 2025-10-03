@@ -64,8 +64,8 @@ export function ThemeToggleSwitch() {
               exit="exit"
               className="absolute inset-0 flex items-center justify-center"
             >
-              <Cloudy className="absolute h-5 w-5 text-white" style={{ left: '60%' }} />
-              <Cloud className="absolute h-4 w-4 text-white" style={{ left: '45%', top: '60%' }} />
+              <Cloudy className="absolute h-5 w-5 text-white" style={{ left: '60%' }} fill="white" />
+              <Cloud className="absolute h-4 w-4 text-white" style={{ left: '45%', top: '60%' }} fill="white" />
             </motion.div>
           )}
         </AnimatePresence>
@@ -79,9 +79,9 @@ export function ThemeToggleSwitch() {
               exit="exit"
               className="absolute inset-0 flex items-center justify-center"
             >
-              <Star className="absolute h-3 w-3 text-yellow-300" style={{ left: '20%', top: '30%' }} />
+              <Star className="absolute h-3 w-3 text-yellow-300" style={{ left: '20%', top: '30%' }} fill="currentColor" />
               <Asterisk className="absolute h-4 w-4 text-yellow-300" style={{ left: '35%', top: '60%' }} />
-              <Star className="absolute h-2 w-2 text-yellow-300" style={{ left: '25%', top: '15%' }} />
+              <Star className="absolute h-2 w-2 text-yellow-300" style={{ left: '25%', top: '15%' }} fill="currentColor" />
             </motion.div>
           )}
         </AnimatePresence>
@@ -103,7 +103,7 @@ export function ThemeToggleSwitch() {
                 animate={{ rotate: 0, scale: 1, transition: spring }}
                 exit={{ rotate: 90, scale: 0, transition: spring }}
               >
-                <Moon className="h-6 w-6 text-zinc-800" />
+                <Moon className="h-6 w-6 text-zinc-800" fill="currentColor" />
               </motion.div>
             ) : (
               <motion.div
@@ -112,7 +112,7 @@ export function ThemeToggleSwitch() {
                 animate={{ rotate: 0, scale: 1, transition: spring }}
                 exit={{ rotate: -90, scale: 0, transition: spring }}
               >
-                <Sun className="h-6 w-6 text-sky-500" />
+                <Sun className="h-6 w-6 text-sky-500" fill="currentColor" />
               </motion.div>
             )}
           </AnimatePresence>

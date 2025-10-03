@@ -1,5 +1,3 @@
-
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -23,6 +21,7 @@ import {
   Settings,
   Sun,
   Moon,
+  Camera,
 } from "lucide-react";
 import { useAuth, useUser } from "@/firebase";
 
@@ -59,6 +58,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Label } from "@/components/ui/label";
 import { useTheme } from "next-themes";
 import { localAbgAnalysis } from "@/lib/local-abg-analysis";
+import { AbgScanDialog } from "@/components/AbgScanDialog";
+import { extractAbgFromImage } from "@/ai/flows/extract-abg-from-image";
 
 type AnalysisResult = Omit<AbgFormState, "error"> & {
   timestamp: string;
@@ -87,11 +88,13 @@ export default function Home() {
   const auth = useAuth();
   const { theme, setTheme } = useTheme();
   const [isLoading, setIsLoading] = useState(false);
+  const [isScanning, setIsScanning] = useState(false);
   const [results, setResults] = useState<AnalysisResult | null>(null);
   const [history, setHistory] = useState<AnalysisResult[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isScanDialogOpen, setIsScanDialogOpen] = useState(false);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -152,6 +155,35 @@ export default function Home() {
       BE: 0,
     },
   });
+
+  const handleImageScan = async (imageDataUri: string) => {
+    setIsScanDialogOpen(false);
+    setIsScanning(true);
+    setError(null);
+    try {
+      const result = await extractAbgFromImage({ imageDataUri });
+      const { values } = result;
+      
+      let valueSet = false;
+      if (values.pH) { form.setValue('pH', values.pH); valueSet = true; }
+      if (values.pCO2) { form.setValue('pCO2', values.pCO2); valueSet = true; }
+      if (values.HCO3) { form.setValue('HCO3', values.HCO3); valueSet = true; }
+      if (values.PaO2) { form.setValue('PaO2', values.PaO2); valueSet = true; }
+      if (values.BE) { form.setValue('BE', values.BE); valueSet = true; }
+      
+      if (valueSet) {
+        await onSubmit(form.getValues());
+      } else {
+        setError("Could not extract any ABG values from the image. Please try again or enter them manually.");
+      }
+
+    } catch (e) {
+      console.error("Image scan failed:", e);
+      setError("Failed to analyze the image. Please ensure it's a clear photo of an ABG report.");
+    } finally {
+      setIsScanning(false);
+    }
+  };
 
   async function onSubmit(values: z.infer<typeof AbgFormSchema>) {
     setIsLoading(true);
@@ -292,6 +324,11 @@ export default function Home() {
 
   return (
     <>
+      <AbgScanDialog 
+        isOpen={isScanDialogOpen}
+        onOpenChange={setIsScanDialogOpen}
+        onScan={handleImageScan}
+      />
       <div className="min-h-screen w-full">
         <header className="container mx-auto px-4 py-4 flex justify-between items-center">
             <div className="inline-flex items-center gap-3">
@@ -381,7 +418,7 @@ export default function Home() {
                                   min={field.min}
                                   max={field.max}
                                   step={field.step}
-                                  disabled={isLoading}
+                                  disabled={isLoading || isScanning}
                                   className="[&>span:first-child]:h-2 [&>span:last-child]:h-5 [&>span:last-child]:w-5"
                                 />
                               </FormControl>
@@ -390,22 +427,34 @@ export default function Home() {
                           )}
                         />
                       ))}
-
-                      <Button
-                        type="submit"
-                        className="w-full font-semibold"
-                        disabled={isLoading || !user}
-                        size="lg"
-                      >
-                        {isLoading ? (
-                          <>
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Analyzing...
-                          </>
-                        ) : (
-                          "Analyze Now"
-                        )}
-                      </Button>
+                      
+                      <div className="flex flex-col sm:flex-row gap-2">
+                         <Button
+                          type="button"
+                          variant="outline"
+                          className="w-full font-semibold"
+                          onClick={() => setIsScanDialogOpen(true)}
+                          disabled={isLoading || isScanning}
+                        >
+                          <Camera className="mr-2 h-4 w-4" />
+                          Scan ABG Report
+                        </Button>
+                        <Button
+                          type="submit"
+                          className="w-full font-semibold"
+                          disabled={isLoading || isScanning || !user}
+                          size="lg"
+                        >
+                          {isLoading || isScanning ? (
+                            <>
+                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                              {isScanning ? "Scanning..." : "Analyzing..."}
+                            </>
+                          ) : (
+                            "Analyze Now"
+                          )}
+                        </Button>
+                      </div>
                     </form>
                   </Form>
                 </CardContent>
@@ -414,7 +463,7 @@ export default function Home() {
 
             <div className="md:col-span-3">
               <div className="space-y-6">
-                {isLoading && (
+                {(isLoading || isScanning) && (
                   <>
                     <Skeleton className="h-48 w-full" />
                     <Skeleton className="h-48 w-full" />
@@ -430,7 +479,7 @@ export default function Home() {
                   </Alert>
                 )}
 
-                {!isLoading && !results && !error && (
+                {!isLoading && !isScanning && !results && !error && (
                    <Card className="flex flex-col items-center justify-center text-center p-8 h-full min-h-[50vh] shadow-none border-dashed">
                      <Beaker className="h-24 w-24 text-primary/50 mb-8" />
                      <h3 className="text-xl font-semibold text-foreground">
@@ -536,5 +585,3 @@ export default function Home() {
     </>
   );
 }
-
-    

@@ -20,7 +20,9 @@ import {
   Droplets,
   Cloud,
   Baseline,
+  LogOut,
 } from "lucide-react";
+import { useAuth, useUser } from "@/firebase";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -31,7 +33,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import {
   Card,
   CardContent,
@@ -39,29 +40,19 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
 import { analyzeAbg } from "@/app/actions";
 import { AbgFormSchema, type AbgFormState } from "@/app/schema";
-import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { Login } from "@/components/Login";
 
 type Results = Omit<AbgFormState, "error">;
 
 export default function Home() {
-  const [isDisclaimerOpen, setIsDisclaimerOpen] = useState(false);
-  const [hasAcceptedDisclaimer, setHasAcceptedDisclaimer] = useState(false);
-
+  const { user, isUserLoading } = useUser();
+  const auth = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [results, setResults] = useState<Results | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -69,20 +60,6 @@ export default function Home() {
   const placeholderImage = PlaceHolderImages.find(
     (img) => img.id === "medical-chart-placeholder"
   );
-
-  useEffect(() => {
-    if (localStorage.getItem("abgInsightsDisclaimerAccepted") === "true") {
-      setHasAcceptedDisclaimer(true);
-    } else {
-      setIsDisclaimerOpen(true);
-    }
-  }, []);
-
-  const handleAcceptDisclaimer = () => {
-    localStorage.setItem("abgInsightsDisclaimerAccepted", "true");
-    setIsDisclaimerOpen(false);
-    setHasAcceptedDisclaimer(true);
-  };
 
   const form = useForm<z.infer<typeof AbgFormSchema>>({
     resolver: zodResolver(AbgFormSchema),
@@ -96,6 +73,10 @@ export default function Home() {
   });
 
   async function onSubmit(values: z.infer<typeof AbgFormSchema>) {
+    if (!user) {
+      setError("You must be logged in to perform an analysis.");
+      return;
+    }
     setIsLoading(true);
     setResults(null);
     setError(null);
@@ -109,6 +90,25 @@ export default function Home() {
     }
 
     setIsLoading(false);
+  }
+  
+  const handleSignOut = async () => {
+    if (auth) {
+      await auth.signOut();
+    }
+  };
+
+
+  if (isUserLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <Login />;
   }
 
   const resultCards = [
@@ -145,31 +145,12 @@ export default function Home() {
 
   return (
     <>
-      <AlertDialog open={isDisclaimerOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Disclaimer</AlertDialogTitle>
-            <AlertDialogDescription>
-              This tool provides an AI-based analysis and does not constitute medical
-              advice. The interpretations are for informational purposes and should be
-              used in conjunction with a full clinical evaluation by a qualified
-              medical professional.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <div className="space-y-2">
-            <Label htmlFor="background">Your Professional Role (Optional)</Label>
-            <Input id="background" placeholder="e.g., Physician, Nurse, Student" />
-          </div>
-          <AlertDialogFooter>
-            <AlertDialogAction onClick={handleAcceptDisclaimer}>
-              Acknowledge & Continue
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
       <div className="min-h-screen w-full">
-        <header className="absolute top-4 right-4 z-10">
+        <header className="absolute top-4 right-4 z-10 flex items-center gap-4">
+          <Button variant="ghost" size="icon" onClick={handleSignOut}>
+            <LogOut className="h-5 w-5" />
+            <span className="sr-only">Sign Out</span>
+          </Button>
           <ThemeToggle />
         </header>
         <main className="container mx-auto px-4 py-8 md:py-12">
@@ -238,7 +219,7 @@ export default function Home() {
                       <Button
                         type="submit"
                         className="w-full font-semibold"
-                        disabled={isLoading || !hasAcceptedDisclaimer}
+                        disabled={isLoading || !user}
                         size="lg"
                       >
                         {isLoading ? (

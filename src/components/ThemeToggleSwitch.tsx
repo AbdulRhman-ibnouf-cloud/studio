@@ -10,7 +10,7 @@ import { cn } from '@/lib/utils';
 const SunIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" {...props}>
         <path d="M12 16a4 4 0 100-8 4 4 0 000 8z" />
-        <path fillRule="evenodd" d="M12 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm0 20a1 1 0 01-1-1v-1a1 1 0 112 0v1a1 1 0 01-1 1zM2 12a1 1 0 011-1h1a1 1 0 110 2H3a1 1 0 01-1-1zm20 0a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.636 5.636a1 1 0 011.414 0l.707.707a1 1 0 01-1.414 1.414l-.707-.707a1 1 0 010-1.414zm12.728 12.728a1 1_0_ 01-1.414 0l-.707-.707a1 1 0 011.414-1.414l.707.707a1 1 0 010 1.414zM5.636 18.364a1 1 0 010-1.414l.707-.707a1 1 0 011.414 1.414l-.707.707a1 1 0 01-1.414 0zm12.728-12.728a1 1 0 010 1.414l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 0z" clipRule="evenodd" />
+        <path fillRule="evenodd" d="M12 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm0 20a1 1 0 01-1-1v-1a1 1 0 112 0v1a1 1 0 01-1 1zM2 12a1 1 0 011-1h1a1 1 0 110 2H3a1 1 0 01-1-1zm20 0a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.636 5.636a1 1 0 011.414 0l.707.707a1 1 0 01-1.414 1.414l-.707-.707a1 1 0 010-1.414zm12.728 12.728a1 1 0 01-1.414 0l-.707-.707a1 1 0 011.414-1.414l.707.707a1 1 0 010 1.414zM5.636 18.364a1 1 0 010-1.414l.707-.707a1 1 0 011.414 1.414l-.707.707a1 1 0 01-1.414 0zm12.728-12.728a1 1 0 010 1.414l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 0z" clipRule="evenodd" />
     </svg>
 );
 
@@ -55,6 +55,39 @@ export function ThemeToggleSwitch() {
         )}
         aria-label={`Switch to ${isDark ? 'light' : 'dark'} mode`}
       >
+        <AnimatePresence>
+          {!isDark && (
+            <motion.div
+              key="clouds"
+              initial={{ x: '100%', opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              exit={{ x: '100%', opacity: 0 }}
+              transition={{ duration: 0.5, ease: 'easeInOut' }}
+              className="absolute inset-0 flex items-center justify-center"
+            >
+              <Cloud className="h-4 w-4 text-white/90 absolute -right-1 top-2" fill="white" />
+              <Cloudy className="h-5 w-5 text-white/90 absolute right-3 bottom-1" fill="white" />
+              <Cloud className="h-3 w-3 text-white/90 absolute right-6 top-5" fill="white" />
+            </motion.div>
+          )}
+        </AnimatePresence>
+        <AnimatePresence>
+          {isDark && (
+            <motion.div
+              key="stars"
+              initial={{ x: '-100%', opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              exit={{ x: '-100%', opacity: 0 }}
+              transition={{ duration: 0.5, ease: 'easeInOut' }}
+              className="absolute inset-0 flex items-center justify-center"
+            >
+                <Star className="h-3 w-3 text-white absolute left-2 top-2" fill="white"/>
+                <Star className="h-4 w-4 text-white absolute left-6 top-4" fill="white"/>
+                <Star className="h-2 w-2 text-white absolute left-9 bottom-2" fill="white"/>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         <motion.div
           layout
           transition={spring}
@@ -89,3 +122,4 @@ export function ThemeToggleSwitch() {
     </div>
   );
 }
+

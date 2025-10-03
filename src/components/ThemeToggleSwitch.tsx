@@ -73,13 +73,25 @@ export function ThemeToggleSwitch() {
       <span className={cn("font-medium", !isDark ? "text-primary" : "text-muted-foreground")}>Light</span>
       <div
         className={cn(
-          'relative flex h-10 w-20 cursor-pointer items-center rounded-full p-1 transition-colors duration-300',
-          isDark ? 'bg-blue-900/70 justify-end' : 'bg-yellow-300/80 justify-start'
+          'relative flex h-10 w-20 cursor-pointer items-center rounded-full p-1 transition-colors duration-300 overflow-hidden',
+          isDark ? 'justify-end' : 'justify-start'
         )}
         onClick={toggleTheme}
       >
+        <motion.div 
+            className="absolute inset-0 w-full h-full bg-blue-900/70"
+            initial={{ x: "100%" }}
+            animate={{ x: isDark ? "0%" : "100%" }}
+            transition={{ duration: 0.5, type: 'tween', ease: 'circOut' }}
+        />
+        <motion.div 
+            className="absolute inset-0 w-full h-full bg-yellow-300/80"
+            initial={{ x: "0%" }}
+            animate={{ x: isDark ? "-100%" : "0%" }}
+            transition={{ duration: 0.5, type: 'tween', ease: 'circIn' }}
+        />
         <motion.div
-          className="flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-md"
+          className="z-10 flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-md"
           layout
           transition={spring}
         >

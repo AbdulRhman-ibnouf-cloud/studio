@@ -49,10 +49,10 @@ export function ThemeToggleSwitch() {
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: '100%', opacity: 0 }}
               transition={{ duration: 0.5, ease: 'easeInOut' }}
-              className="absolute inset-0 flex items-center justify-center"
+              className="absolute inset-0 flex items-center justify-center gap-x-1"
             >
-              <Cloud fill="white" className="h-5 w-5 text-white/90 absolute -right-1 top-2" />
-              <Cloudy fill="white" className="h-6 w-6 text-white/90 absolute right-4 bottom-1" />
+              <Cloud fill="white" className="h-5 w-5 text-white/90" />
+              <Cloudy fill="white" className="h-6 w-6 text-white/90" />
             </motion.div>
           )}
         </AnimatePresence>
@@ -64,10 +64,10 @@ export function ThemeToggleSwitch() {
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: '-100%', opacity: 0 }}
               transition={{ duration: 0.5, ease: 'easeInOut' }}
-              className="absolute inset-0 flex items-center justify-center"
+              className="absolute inset-0 flex items-center justify-center gap-x-2"
             >
-                <Star fill="white" className="h-4 w-4 text-yellow-300 absolute left-3 top-2"/>
-                <Star fill="white" className="h-3 w-3 text-yellow-300 absolute left-8 bottom-2"/>
+                <Star fill="white" className="h-4 w-4 text-yellow-300"/>
+                <Star fill="white" className="h-3 w-3 text-yellow-300"/>
             </motion.div>
           )}
         </AnimatePresence>

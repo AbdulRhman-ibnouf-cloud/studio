@@ -6,10 +6,13 @@ import {
   Loader2,
   Mail,
   User as UserIcon,
+  KeyRound,
 } from 'lucide-react';
 import {
   initiateAnonymousSignIn,
   initiateGoogleSignIn,
+  initiateEmailSignIn,
+  initiateEmailSignUp,
 } from '@/firebase/non-blocking-login';
 import { useAuth } from '@/firebase';
 import { Button } from '@/components/ui/button';
@@ -30,6 +33,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { ThemeToggle } from './ThemeToggle';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { TriangleAlert } from 'lucide-react';
 
 function GoogleIcon() {
   return (
@@ -44,24 +49,24 @@ export function Login() {
   const auth = useAuth();
   const [loading, setLoading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
-  const handleGoogleSignIn = async () => {
-    setLoading('google');
+  const handleAuthAction = async (
+    action: 'google' | 'anonymous' | 'email-signin' | 'email-signup'
+  ) => {
+    setLoading(action);
     setError(null);
     try {
-      // Non-blocking call
-      initiateGoogleSignIn(auth);
-    } catch (e: any) {
-      setError(e.message);
-      setLoading(null);
-    }
-  };
-
-  const handleAnonymousSignIn = async () => {
-    setLoading('anonymous');
-    setError(null);
-    try {
-      initiateAnonymousSignIn(auth);
+      if (action === 'google') {
+        initiateGoogleSignIn(auth);
+      } else if (action === 'anonymous') {
+        initiateAnonymousSignIn(auth);
+      } else if (action === 'email-signin') {
+        initiateEmailSignIn(auth, email, password);
+      } else if (action === 'email-signup') {
+        initiateEmailSignUp(auth, email, password);
+      }
     } catch (e: any) {
       setError(e.message);
       setLoading(null);
@@ -87,31 +92,58 @@ export function Login() {
       </div>
 
       <Tabs defaultValue="sign-in" className="w-full max-w-md">
-        <TabsList className="grid w-full grid-cols-1">
+        <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="sign-in">Sign In</TabsTrigger>
+          <TabsTrigger value="sign-up">Sign Up</TabsTrigger>
         </TabsList>
         <TabsContent value="sign-in">
           <Card>
             <CardHeader>
               <CardTitle>Sign In</CardTitle>
               <CardDescription>
-                Choose your preferred sign-in method below.
+                Enter your credentials or use a provider.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
+              {error && (
+                <Alert variant="destructive">
+                  <TriangleAlert className="h-4 w-4" />
+                  <AlertTitle>Authentication Error</AlertTitle>
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
+              <div className="space-y-2">
+                <Label htmlFor="email-signin">Email</Label>
+                <Input
+                  id="email-signin"
+                  type="email"
+                  placeholder="m@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={!!loading}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="password-signin">Password</Label>
+                <Input
+                  id="password-signin"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  disabled={!!loading}
+                />
+              </div>
               <Button
-                variant="outline"
                 className="w-full"
-                onClick={handleGoogleSignIn}
-                disabled={loading === 'google'}
-                size="lg"
+                onClick={() => handleAuthAction('email-signin')}
+                disabled={loading === 'email-signin'}
               >
-                {loading === 'google' ? (
+                {loading === 'email-signin' ? (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 ) : (
-                  <GoogleIcon />
+                  <Mail className="mr-2 h-4 w-4" />
                 )}
-                Sign In with Google
+                Sign In with Email
               </Button>
 
               <div className="relative">
@@ -126,9 +158,23 @@ export function Login() {
               </div>
 
               <Button
+                variant="outline"
+                className="w-full"
+                onClick={() => handleAuthAction('google')}
+                disabled={loading === 'google'}
+                size="lg"
+              >
+                {loading === 'google' ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <GoogleIcon />
+                )}
+                Sign In with Google
+              </Button>
+              <Button
                 variant="secondary"
                 className="w-full"
-                onClick={handleAnonymousSignIn}
+                onClick={() => handleAuthAction('anonymous')}
                 disabled={loading === 'anonymous'}
               >
                 {loading === 'anonymous' ? (
@@ -137,6 +183,58 @@ export function Login() {
                   <UserIcon className="mr-2 h-4 w-4" />
                 )}
                 Continue as Guest
+              </Button>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        <TabsContent value="sign-up">
+          <Card>
+            <CardHeader>
+              <CardTitle>Sign Up</CardTitle>
+              <CardDescription>
+                Create a new account to save your analyses.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {error && (
+                <Alert variant="destructive">
+                  <TriangleAlert className="h-4 w-4" />
+                  <AlertTitle>Authentication Error</AlertTitle>
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
+              <div className="space-y-2">
+                <Label htmlFor="email-signup">Email</Label>
+                <Input
+                  id="email-signup"
+                  type="email"
+                  placeholder="m@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={!!loading}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="password-signup">Password</Label>
+                <Input
+                  id="password-signup"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  disabled={!!loading}
+                />
+              </div>
+              <Button
+                className="w-full"
+                onClick={() => handleAuthAction('email-signup')}
+                disabled={loading === 'email-signup'}
+              >
+                {loading === 'email-signup' ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <Mail className="mr-2 h-4 w-4" />
+                )}
+                Sign Up with Email
               </Button>
             </CardContent>
           </Card>

@@ -126,11 +126,12 @@ export default function Home() {
       } else {
         setHistory([]);
       }
-    } else {
-      // Clear history when user logs out
+    } else if (!isUserLoading) {
+      // Clear history only when loading is finished and there's no user
       setHistory([]);
+      resetPage();
     }
-  }, [user, resetPage]);
+  }, [user, isUserLoading, resetPage]);
 
 
   useEffect(() => {
@@ -289,7 +290,6 @@ export default function Home() {
   const handleSignOut = async () => {
     if (auth) {
       await auth.signOut();
-      resetPage();
     }
   };
 

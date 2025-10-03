@@ -10,15 +10,14 @@ import {
   BrainCircuit,
   HeartPulse,
   Loader2,
-  Lightbulb,
   FileText,
   TriangleAlert,
   FlaskConical,
   Wind,
   Droplets,
-  Cloud,
   Baseline,
   LogOut,
+  History,
 } from "lucide-react";
 import { useAuth, useUser } from "@/firebase";
 
@@ -45,15 +44,37 @@ import { AbgFormSchema, type AbgFormState } from "@/app/schema";
 import { Slider } from "@/components/ui/slider";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Login } from "@/components/Login";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
 
-type Results = Omit<AbgFormState, "error">;
+type AnalysisResult = Omit<AbgFormState, "error"> & {
+  timestamp: string;
+  inputs: z.infer<typeof AbgFormSchema>;
+};
 
 export default function Home() {
   const { user, isUserLoading } = useUser();
   const auth = useAuth();
   const [isLoading, setIsLoading] = useState(false);
-  const [results, setResults] = useState<Results | null>(null);
+  const [results, setResults] = useState<AnalysisResult | null>(null);
+  const [history, setHistory] = useState<AnalysisResult[]>([]);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const savedHistory = localStorage.getItem("abgAnalysisHistory");
+      if (savedHistory) {
+        setHistory(JSON.parse(savedHistory));
+      }
+    }
+  }, []);
 
   const form = useForm<z.infer<typeof AbgFormSchema>>({
     resolver: zodResolver(AbgFormSchema),
@@ -75,23 +96,44 @@ export default function Home() {
     setResults(null);
     setError(null);
 
-    const response = await analyzeAbg(values);
+    try {
+      const response = await analyzeAbg(values);
 
-    if ("error" in response) {
-      setError(response.error);
-    } else {
-      setResults(response);
+      if ("error" in response) {
+        setError(response.error);
+      } else {
+        const newResult: AnalysisResult = {
+          ...response,
+          timestamp: new Date().toISOString(),
+          inputs: values,
+        };
+        setResults(newResult);
+        const updatedHistory = [newResult, ...history];
+        setHistory(updatedHistory);
+        localStorage.setItem(
+          "abgAnalysisHistory",
+          JSON.stringify(updatedHistory)
+        );
+      }
+    } catch (e) {
+      // Check if navigator is offline
+      if (typeof window !== 'undefined' && !window.navigator.onLine) {
+        setError("You are offline. Please connect to the internet to perform a new analysis.");
+      } else {
+         const errorMessage = e instanceof Error ? e.message : "An unknown error occurred during analysis.";
+         setError(`Sorry, we couldn't complete the analysis. ${errorMessage}`);
+      }
     }
+
 
     setIsLoading(false);
   }
-  
+
   const handleSignOut = async () => {
     if (auth) {
       await auth.signOut();
     }
   };
-
 
   if (isUserLoading) {
     return (
@@ -131,11 +173,15 @@ export default function Home() {
 
   const formFields = [
     { name: "pH", label: "pH", icon: FlaskConical, min: 6.8, max: 7.8, step: 0.01 },
-    { name: "pCO2", label: "pCO₂ (mmHg)", icon: Cloud, min: 10, max: 150, step: 1 },
+    { name: "pCO2", label: "pCO₂ (mmHg)", icon: Wind, min: 10, max: 150, step: 1 },
     { name: "HCO3", label: "HCO₃⁻ (mEq/L)", icon: Droplets, min: 5, max: 60, step: 1 },
     { name: "PaO2", label: "PaO₂ (mmHg)", icon: Wind, min: 20, max: 500, step: 1 },
     { name: "BE", label: "Base Excess (mEq/L)", icon: Baseline, min: -30, max: 30, step: 1 },
   ] as const;
+  
+  const displayResults = (result: AnalysisResult) => {
+    setResults(result);
+  }
 
   return (
     <>
@@ -148,6 +194,44 @@ export default function Home() {
               </h1>
             </div>
             <div className="flex items-center gap-4">
+               <Sheet>
+                  <SheetTrigger asChild>
+                    <Button variant="outline" size="icon">
+                      <History className="h-5 w-5" />
+                      <span className="sr-only">View History</span>
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent>
+                    <SheetHeader>
+                      <SheetTitle>Analysis History</SheetTitle>
+                    </SheetHeader>
+                    <ScrollArea className="h-[calc(100%-4rem)]">
+                      <div className="space-y-4 py-4">
+                        {history.length > 0 ? (
+                          history.map((item, index) => (
+                            <Card key={index} className="cursor-pointer hover:bg-muted/50" onClick={() => displayResults(item)}>
+                              <CardHeader>
+                                <CardTitle className="text-base">
+                                  {new Date(item.timestamp).toLocaleString()}
+                                </CardTitle>
+                                <CardDescription>
+                                  pH: {item.inputs.pH}, pCO₂: {item.inputs.pCO2}, HCO₃⁻: {item.inputs.HCO3}
+                                </CardDescription>
+                              </CardHeader>
+                              <CardContent>
+                                <p className="truncate text-sm text-muted-foreground">{item.interpretation}</p>
+                              </CardContent>
+                            </Card>
+                          ))
+                        ) : (
+                          <p className="text-center text-muted-foreground">
+                            No history yet.
+                          </p>
+                        )}
+                      </div>
+                    </ScrollArea>
+                  </SheetContent>
+                </Sheet>
                 <ThemeToggle />
                 <Button variant="ghost" size="icon" onClick={handleSignOut}>
                     <LogOut className="h-5 w-5" />
@@ -253,16 +337,16 @@ export default function Home() {
                 )}
 
                 {!isLoading && !results && !error && (
-                  <Card className="flex flex-col items-center justify-center text-center p-8 h-full min-h-[50vh] shadow-none border-dashed">
-                    <Beaker className="h-24 w-24 text-muted-foreground/50 mb-8" />
-                    <h3 className="text-xl font-semibold text-foreground">
-                      Awaiting Analysis
-                    </h3>
-                    <p className="text-muted-foreground mt-2 max-w-sm">
-                      Your patient&apos;s results will appear here once the analysis
-                      is complete.
-                    </p>
-                  </Card>
+                   <Card className="flex flex-col items-center justify-center text-center p-8 h-full min-h-[50vh] shadow-none border-dashed">
+                     <Beaker className="h-24 w-24 text-primary/50 mb-8" />
+                     <h3 className="text-xl font-semibold text-foreground">
+                       Awaiting Analysis
+                     </h3>
+                     <p className="text-muted-foreground mt-2 max-w-sm">
+                       Your patient&apos;s results will appear here once the analysis
+                       is complete.
+                     </p>
+                   </Card>
                 )}
 
                 {results && (

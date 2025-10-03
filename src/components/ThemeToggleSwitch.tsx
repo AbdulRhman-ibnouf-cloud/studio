@@ -73,14 +73,13 @@ export function ThemeToggleSwitch() {
           >
             {isDark ? (
               <div className="absolute right-0 mr-4 flex items-center justify-center w-1/2">
-                <Star className="absolute h-3 w-3 text-yellow-300" style={{ left: '20%', top: '30%' }} fill="currentColor" />
                 <Star className="absolute h-4 w-4 text-yellow-300" style={{ left: '35%', top: '60%' }} fill="currentColor" />
-                <Star className="absolute h-2 w-2 text-yellow-300" style={{ left: '25%', top: '15%' }} fill="currentColor" />
+                <Star className="absolute h-3 w-3 text-yellow-300" style={{ left: '20%', top: '30%' }} fill="currentColor" />
               </div>
             ) : (
               <div className="absolute left-0 ml-4 flex items-center justify-center w-1/2">
-                <Cloudy className="absolute h-5 w-5 text-white" style={{ left: '60%' }} fill="white" />
-                <Cloud className="absolute h-4 w-4 text-white" style={{ left: '45%', top: '60%' }} fill="white" />
+                <Cloud className="absolute h-5 w-5 text-white" style={{ left: '45%', top: '60%' }} fill="currentColor"/>
+                <Cloudy className="absolute h-6 w-6 text-white" style={{ left: '60%' }} fill="white" />
               </div>
             )}
           </motion.div>
@@ -91,7 +90,7 @@ export function ThemeToggleSwitch() {
           layout
           transition={spring}
           className={cn(
-            'absolute z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-md',
+            'absolute z-10 flex h-9 w-9 items-center justify-center',
             isDark ? 'right-1' : 'left-1'
           )}
         >
@@ -103,7 +102,7 @@ export function ThemeToggleSwitch() {
                 animate={{ rotate: 0, scale: 1, transition: spring }}
                 exit={{ rotate: 90, scale: 0, transition: spring }}
               >
-                <Moon className="h-5 w-5 text-zinc-800" fill="currentColor" />
+                <Moon className="h-5 w-5 text-yellow-400" fill="currentColor" />
               </motion.div>
             ) : (
               <motion.div
@@ -112,7 +111,7 @@ export function ThemeToggleSwitch() {
                 animate={{ rotate: 0, scale: 1, transition: spring }}
                 exit={{ rotate: -90, scale: 0, transition: spring }}
               >
-                <Sun className="h-5 w-5 text-yellow-400" fill="currentColor" />
+                <Sun className="h-5 w-5 text-white" fill="currentColor" />
               </motion.div>
             )}
           </AnimatePresence>

@@ -371,7 +371,6 @@ export default function Home() {
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => setIsSettingsOpen(true)}
                     >
                       <Settings className="h-5 w-5" />
                       <span className="sr-only">Open Settings</span>

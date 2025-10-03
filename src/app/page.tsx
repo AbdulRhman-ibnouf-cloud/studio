@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -18,6 +19,9 @@ import {
   Baseline,
   LogOut,
   History,
+  Settings,
+  Sun,
+  Moon,
 } from "lucide-react";
 import { useAuth, useUser } from "@/firebase";
 
@@ -42,7 +46,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { analyzeAbg } from "@/app/actions";
 import { AbgFormSchema, type AbgFormState } from "@/app/schema";
 import { Slider } from "@/components/ui/slider";
-import { ThemeToggle } from "@/components/ThemeToggle";
 import { Login } from "@/components/Login";
 import {
   Sheet,
@@ -53,6 +56,7 @@ import {
 } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
+import { useTheme } from "next-themes";
 
 type AnalysisResult = Omit<AbgFormState, "error"> & {
   timestamp: string;
@@ -62,11 +66,13 @@ type AnalysisResult = Omit<AbgFormState, "error"> & {
 export default function Home() {
   const { user, isUserLoading } = useUser();
   const auth = useAuth();
+  const { setTheme } = useTheme();
   const [isLoading, setIsLoading] = useState(false);
   const [results, setResults] = useState<AnalysisResult | null>(null);
   const [history, setHistory] = useState<AnalysisResult[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -197,13 +203,7 @@ export default function Home() {
               </h1>
             </div>
             <div className="flex items-center gap-4">
-               <Sheet open={isHistoryOpen} onOpenChange={setIsHistoryOpen}>
-                  <SheetTrigger asChild>
-                    <Button variant="outline" size="icon">
-                      <History className="h-5 w-5" />
-                      <span className="sr-only">View History</span>
-                    </Button>
-                  </SheetTrigger>
+                <Sheet open={isHistoryOpen} onOpenChange={setIsHistoryOpen}>
                   <SheetContent>
                     <SheetHeader>
                       <SheetTitle>Analysis History</SheetTitle>
@@ -235,11 +235,6 @@ export default function Home() {
                     </ScrollArea>
                   </SheetContent>
                 </Sheet>
-                <ThemeToggle />
-                <Button variant="ghost" size="icon" onClick={handleSignOut}>
-                    <LogOut className="h-5 w-5" />
-                    <span className="sr-only">Sign Out</span>
-                </Button>
             </div>
         </header>
 
@@ -387,6 +382,64 @@ export default function Home() {
           </div>
         </main>
       </div>
+
+      <Sheet open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
+        <SheetTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="fixed bottom-4 right-4 h-14 w-14 rounded-full shadow-lg bg-primary text-primary-foreground hover:bg-primary/90"
+          >
+            <Settings className="h-6 w-6" />
+            <span className="sr-only">Open Settings</span>
+          </Button>
+        </SheetTrigger>
+        <SheetContent side="bottom">
+          <SheetHeader>
+            <SheetTitle>Settings</SheetTitle>
+          </SheetHeader>
+          <div className="py-4">
+            <div className="flex flex-col space-y-4">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setIsHistoryOpen(true);
+                  setIsSettingsOpen(false);
+                }}
+              >
+                <History className="mr-2 h-4 w-4" />
+                View History
+              </Button>
+              <div className="flex flex-col space-y-2">
+                <Label>Appearance</Label>
+                <div className="flex justify-around rounded-lg bg-muted p-1">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="flex-1"
+                    onClick={() => setTheme("light")}
+                  >
+                    <Sun className="mr-2 h-4 w-4" /> Light
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="flex-1"
+                    onClick={() => setTheme("dark")}
+                  >
+                    <Moon className="mr-2 h-4 w-4" /> Dark
+                  </Button>
+                </div>
+              </div>
+              <Button variant="destructive" onClick={handleSignOut}>
+                <LogOut className="mr-2 h-4 w-4" />
+                Sign Out
+              </Button>
+            </div>
+          </div>
+        </SheetContent>
+      </Sheet>
     </>
   );
-}
+
+    

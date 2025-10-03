@@ -265,7 +265,7 @@ export default function Home() {
         };
         // We can choose to blend local and AI results here if desired
         // For now, we prefer the more detailed AI result when online
-        newResult.interpretation = `${localResult.interpretation}. ${response.interpretation || ''}`.trim()
+        newResult.interpretation = `${localResult.interpretation} ${response.interpretation || ''}`.trim()
         setResults(newResult);
         const updatedHistory = [newResult, ...history];
         setHistory(updatedHistory);
@@ -371,6 +371,7 @@ export default function Home() {
                     <Button
                       variant="ghost"
                       size="icon"
+                      onClick={() => setIsSettingsOpen(true)}
                     >
                       <Settings className="h-5 w-5" />
                       <span className="sr-only">Open Settings</span>

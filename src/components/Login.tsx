@@ -61,19 +61,19 @@ export function Login() {
   ) => {
     setLoading(action);
     setError(null);
-    try {
-      if (action === 'google') {
-        initiateGoogleSignIn(auth);
-      } else if (action === 'anonymous') {
-        initiateAnonymousSignIn(auth);
-      } else if (action === 'email-signin') {
-        initiateEmailSignIn(auth, email, password);
-      } else if (action === 'email-signup') {
-        initiateEmailSignUp(auth, email, password);
-      }
-    } catch (e: any) {
-      setError(e.message);
+    const onError = (e: any) => {
+      setError(e.message || 'An unexpected error occurred.');
       setLoading(null);
+    }
+    
+    if (action === 'google') {
+      initiateGoogleSignIn(auth, onError);
+    } else if (action === 'anonymous') {
+      initiateAnonymousSignIn(auth, onError);
+    } else if (action === 'email-signin') {
+      initiateEmailSignIn(auth, email, password, onError);
+    } else if (action === 'email-signup') {
+      initiateEmailSignUp(auth, email, password, onError);
     }
   };
 

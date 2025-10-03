@@ -3,7 +3,7 @@
 
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
-import { Cloud, Cloudy, Star, Asterisk, Sun, Moon } from 'lucide-react';
+import { Cloud, Cloudy, Star, Sun, Moon } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 

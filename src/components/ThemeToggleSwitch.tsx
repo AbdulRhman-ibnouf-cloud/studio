@@ -3,9 +3,23 @@
 
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
-import { Sun, Moon, Cloud, Star, Cloudy } from 'lucide-react';
+import { Cloud, Cloudy, Star } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
+
+const SunIcon = (props: React.SVGProps<SVGSVGElement>) => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" {...props}>
+        <path d="M12 16a4 4 0 100-8 4 4 0 000 8z" />
+        <path fillRule="evenodd" d="M12 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm0 20a1 1 0 01-1-1v-1a1 1 0 112 0v1a1 1 0 01-1 1zM2 12a1 1 0 011-1h1a1 1 0 110 2H3a1 1 0 01-1-1zm20 0a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.636 5.636a1 1 0 011.414 0l.707.707a1 1 0 01-1.414 1.414l-.707-.707a1 1 0 010-1.414zm12.728 12.728a1 1_0_ 01-1.414 0l-.707-.707a1 1 0 011.414-1.414l.707.707a1 1 0 010 1.414zM5.636 18.364a1 1 0 010-1.414l.707-.707a1 1 0 011.414 1.414l-.707.707a1 1 0 01-1.414 0zm12.728-12.728a1 1 0 010 1.414l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 0z" clipRule="evenodd" />
+    </svg>
+);
+
+const MoonIcon = (props: React.SVGProps<SVGSVGElement>) => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" {...props}>
+        <path fillRule="evenodd" d="M9.528 1.718a.75.75 0 01.162.819A8.97 8.97 0 009 6a9 9 0 009 9 8.97 8.97 0 004.463-.69a.75.75 0 01.981.981A10.503 10.503 0 0118 19.5 10.5 10.5 0 017.5 9c0-4.347 2.726-8.11 6.544-9.663a.75.75 0 011.284.848z" clipRule="evenodd" />
+    </svg>
+);
+
 
 export function ThemeToggleSwitch() {
   const { theme, setTheme } = useTheme();
@@ -31,66 +45,22 @@ export function ThemeToggleSwitch() {
     damping: 40,
   };
 
-  const variants = {
-    initial: (isDark: boolean) => ({
-      x: isDark ? -80 : 80,
-      opacity: 0,
-      scale: 0.5,
-    }),
-    animate: {
-      x: 0,
-      opacity: 1,
-      scale: 1,
-      transition: { ...spring, delay: 0.2 },
-    },
-    exit: (isDark: boolean) => ({
-      x: isDark ? 80 : -80,
-      opacity: 0,
-      scale: 0.5,
-      transition: { ...spring, duration: 0.4 },
-    }),
-  };
-
   return (
     <div className="flex items-center justify-center">
       <button
         onClick={toggleTheme}
         className={cn(
-          'relative flex h-10 w-24 cursor-pointer items-center rounded-full p-1 transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 overflow-hidden',
-          isDark ? 'bg-slate-900' : 'bg-sky-500'
+          'relative flex h-10 w-20 cursor-pointer items-center rounded-full p-1 transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 overflow-hidden',
+          isDark ? 'bg-black' : 'bg-sky-500'
         )}
         aria-label={`Switch to ${isDark ? 'light' : 'dark'} mode`}
       >
-        <AnimatePresence initial={false} custom={isDark}>
-          <motion.div
-            key={isDark ? 'dark-elements' : 'light-elements'}
-            custom={isDark}
-            variants={variants}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            className="absolute inset-0 flex items-center justify-center"
-          >
-            {isDark ? (
-              <div className="absolute inset-x-0 mx-auto flex items-center justify-center w-1/2">
-                <Star className="absolute h-3 w-3 text-white" style={{ right: '20%', top: '30%' }} fill="currentColor" />
-                <Star className="absolute h-4 w-4 text-white" style={{ right: '35%', top: '60%' }} fill="currentColor" />
-              </div>
-            ) : (
-                <div className="absolute inset-x-0 mx-auto flex items-center justify-center w-1/2">
-                    <Cloudy className="absolute h-5 w-5 text-white" style={{ left: '20%', top: '25%' }} fill="white" />
-                    <Cloud className="absolute h-4 w-4 text-white" style={{ left: '45%', top: '55%' }} fill="currentColor"/>
-                </div>
-            )}
-          </motion.div>
-        </AnimatePresence>
-        
         <motion.div
           layout
           transition={spring}
           className={cn(
             'absolute z-10 flex h-8 w-8 items-center justify-center',
-             isDark ? 'right-1' : 'left-1'
+            isDark ? 'right-1' : 'left-1'
           )}
         >
           <AnimatePresence mode="wait">
@@ -101,7 +71,7 @@ export function ThemeToggleSwitch() {
                 animate={{ rotate: 180, scale: 1, transition: spring }}
                 exit={{ rotate: 90, scale: 0, transition: spring }}
               >
-                <Moon className="h-5 w-5 text-white" fill="currentColor" />
+                <MoonIcon className="h-5 w-5 text-white" />
               </motion.div>
             ) : (
               <motion.div
@@ -110,7 +80,7 @@ export function ThemeToggleSwitch() {
                 animate={{ rotate: 0, scale: 1, transition: spring }}
                 exit={{ rotate: -90, scale: 0, transition: spring }}
               >
-                <Sun className="h-5 w-5 text-white" fill="currentColor" />
+                <SunIcon className="h-5 w-5 text-white" />
               </motion.div>
             )}
           </AnimatePresence>

@@ -55,7 +55,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
+import { Label } from "@/components/ui/label";
 import { useTheme } from "next-themes";
 
 type AnalysisResult = Omit<AbgFormState, "error"> & {
@@ -441,5 +441,6 @@ export default function Home() {
       </Sheet>
     </>
   );
+}
 
     

@@ -83,6 +83,46 @@ export default function Home() {
     }
   }, []);
 
+  useEffect(() => {
+    const NOTIFICATION_THRESHOLD_DAYS = 3;
+    const LAST_VISIT_KEY = 'abgAppLastVisit';
+
+    const showNotification = () => {
+      new Notification('We miss you!', {
+        body: 'Time to check in and analyze some ABG results.',
+        icon: '/favicon.ico', // You might want to have a proper icon
+      });
+    };
+
+    const handleNotifications = () => {
+      const lastVisitString = localStorage.getItem(LAST_VISIT_KEY);
+      const now = new Date();
+
+      if (lastVisitString) {
+        const lastVisit = new Date(lastVisitString);
+        const daysSinceLastVisit = (now.getTime() - lastVisit.getTime()) / (1000 * 3600 * 24);
+
+        if (daysSinceLastVisit >= NOTIFICATION_THRESHOLD_DAYS) {
+          showNotification();
+        }
+      }
+
+      localStorage.setItem(LAST_VISIT_KEY, now.toISOString());
+    };
+
+    if ('Notification' in window) {
+      if (Notification.permission === 'granted') {
+        handleNotifications();
+      } else if (Notification.permission !== 'denied') {
+        Notification.requestPermission().then((permission) => {
+          if (permission === 'granted') {
+            handleNotifications();
+          }
+        });
+      }
+    }
+  }, []);
+
   const form = useForm<z.infer<typeof AbgFormSchema>>({
     resolver: zodResolver(AbgFormSchema),
     defaultValues: {
@@ -442,3 +482,5 @@ export default function Home() {
     </>
   );
 }
+
+    

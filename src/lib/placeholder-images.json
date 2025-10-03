@@ -2,9 +2,9 @@
   "placeholderImages": [
     {
       "id": "medical-chart-placeholder",
-      "description": "A placeholder image showing a medical professional looking at a chart.",
-      "imageUrl": "https://images.unsplash.com/photo-1758691462620-9018c602ed3e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxtZWRpY2FsJTIwY2hhcnR8ZW58MHx8fHwxNzU5NDc2Nzg4fDA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "medical chart"
+      "description": "An abstract artistic representation of medical data analysis.",
+      "imageUrl": "https://images.unsplash.com/photo-1599045118108-bf9954418b76?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxtZWRpY2FsJTIwZGF0YXxlbnwwfHx8fDE3NTk0NzcyMjl8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "medical data"
     }
   ]
 }

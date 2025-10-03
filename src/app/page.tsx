@@ -26,7 +26,6 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -54,6 +53,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { analyzeAbg } from "@/app/actions";
 import { AbgFormSchema, type AbgFormState } from "@/app/schema";
 import { Label } from "@/components/ui/label";
+import { Slider } from "@/components/ui/slider";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 type Results = Omit<AbgFormState, "error">;
 
@@ -135,11 +136,11 @@ export default function Home() {
   ];
 
   const formFields = [
-    { name: "pH", label: "pH", icon: FlaskConical },
-    { name: "pCO2", label: "pCO₂ (mmHg)", icon: Cloud },
-    { name: "HCO3", label: "HCO₃⁻ (mEq/L)", icon: Droplets },
-    { name: "PaO2", label: "PaO₂ (mmHg)", icon: Wind },
-    { name: "BE", label: "Base Excess (mEq/L)", icon: Baseline },
+    { name: "pH", label: "pH", icon: FlaskConical, min: 6.8, max: 7.8, step: 0.01 },
+    { name: "pCO2", label: "pCO₂ (mmHg)", icon: Cloud, min: 10, max: 150, step: 1 },
+    { name: "HCO3", label: "HCO₃⁻ (mEq/L)", icon: Droplets, min: 5, max: 60, step: 1 },
+    { name: "PaO2", label: "PaO₂ (mmHg)", icon: Wind, min: 20, max: 500, step: 1 },
+    { name: "BE", label: "Base Excess (mEq/L)", icon: Baseline, min: -30, max: 30, step: 1 },
   ] as const;
 
   return (
@@ -168,6 +169,9 @@ export default function Home() {
       </AlertDialog>
 
       <div className="min-h-screen w-full">
+        <header className="absolute top-4 right-4 z-10">
+          <ThemeToggle />
+        </header>
         <main className="container mx-auto px-4 py-8 md:py-12">
           <header className="text-center mb-12">
             <div className="inline-flex items-center gap-3">
@@ -197,25 +201,32 @@ export default function Home() {
                   <Form {...form}>
                     <form
                       onSubmit={form.handleSubmit(onSubmit)}
-                      className="space-y-6"
+                      className="space-y-8"
                     >
                       {formFields.map((field) => (
                         <FormField
                           key={field.name}
                           control={form.control}
                           name={field.name}
-                          render={({ field: formField }) => (
+                          render={({ field: { value, onChange } }) => (
                             <FormItem>
-                              <FormLabel className="flex items-center gap-2">
-                                <field.icon className="w-4 h-4 text-muted-foreground" />
-                                {field.label}
-                              </FormLabel>
+                              <div className="flex justify-between items-center">
+                                <FormLabel className="flex items-center gap-2">
+                                  <field.icon className="w-4 h-4 text-muted-foreground" />
+                                  {field.label}
+                                </FormLabel>
+                                <span className="text-sm font-medium text-foreground w-20 text-right">
+                                  {value}
+                                </span>
+                              </div>
                               <FormControl>
-                                <Input
-                                  type="number"
-                                  step="any"
+                                <Slider
+                                  value={[value]}
+                                  onValueChange={(vals) => onChange(vals[0])}
+                                  min={field.min}
+                                  max={field.max}
+                                  step={field.step}
                                   disabled={isLoading}
-                                  {...formField}
                                 />
                               </FormControl>
                               <FormMessage />
@@ -264,24 +275,23 @@ export default function Home() {
                 )}
 
                 {!isLoading && !results && !error && (
-                  <Card className="flex flex-col items-center justify-center text-center p-8 h-[50vh] shadow-none border-dashed">
+                  <Card className="flex flex-col items-center justify-center text-center p-8 h-full min-h-[50vh] shadow-none border-dashed">
                     {placeholderImage && (
-                      <div className="mb-4 rounded-lg overflow-hidden">
+                      <div className="mb-4 rounded-lg overflow-hidden aspect-video relative w-full max-w-md">
                         <Image
                           src={placeholderImage.imageUrl}
                           alt={placeholderImage.description}
-                          width={300}
-                          height={200}
+                          fill
                           className="object-cover"
                           data-ai-hint={placeholderImage.imageHint}
                         />
                       </div>
                     )}
-                    <Lightbulb className="h-10 w-10 text-muted-foreground mb-4" />
+                    <Lightbulb className="h-10 w-10 text-muted-foreground mb-4 mt-8" />
                     <h3 className="text-xl font-semibold text-foreground">
                       Awaiting Analysis
                     </h3>
-                    <p className="text-muted-foreground mt-2">
+                    <p className="text-muted-foreground mt-2 max-w-sm">
                       Your patient&apos;s results will appear here once the analysis
                       is complete.
                     </p>

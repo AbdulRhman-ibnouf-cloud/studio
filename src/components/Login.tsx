@@ -38,7 +38,7 @@ import { TriangleAlert } from 'lucide-react';
 
 function GoogleIcon() {
   return (
-    <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2">
       <title>Google</title>
       <path d="M12.48 10.92v3.28h7.84c-.24 1.84-.85 3.18-1.73 4.1-1.05 1.05-2.58 3.18-7.11 3.18-5.52 0-10.02-4.48-10.02-10.01s4.5-10.01 10.02-10.01c3.18 0 5.22 1.25 6.42 2.39l2.84-2.82C18.68 1.43 15.82 0 12.48 0 5.6 0 0 5.6 0 12.5S5.6 25 12.48 25c7.34 0 11.52-5.06 11.52-11.75 0-.79-.07-1.55-.19-2.33h-11.3v.01Z" />
     </svg>
@@ -101,7 +101,7 @@ export function Login() {
             <CardHeader>
               <CardTitle>Sign In</CardTitle>
               <CardDescription>
-                Enter your credentials or use a provider.
+                Choose your preferred sign-in method below.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -112,6 +112,30 @@ export function Login() {
                   <AlertDescription>{error}</AlertDescription>
                 </Alert>
               )}
+               <Button
+                variant="outline"
+                className="w-full"
+                onClick={() => handleAuthAction('google')}
+                disabled={loading === 'google'}
+                size="lg"
+              >
+                {loading === 'google' ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <GoogleIcon />
+                )}
+                Sign In with Google
+              </Button>
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-background px-2 text-muted-foreground">
+                    Or continue with
+                  </span>
+                </div>
+              </div>
               <div className="space-y-2">
                 <Label htmlFor="email-signin">Email</Label>
                 <Input
@@ -146,31 +170,6 @@ export function Login() {
                 Sign In with Email
               </Button>
 
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t" />
-                </div>
-                <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-background px-2 text-muted-foreground">
-                    Or continue with
-                  </span>
-                </div>
-              </div>
-
-              <Button
-                variant="outline"
-                className="w-full"
-                onClick={() => handleAuthAction('google')}
-                disabled={loading === 'google'}
-                size="lg"
-              >
-                {loading === 'google' ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                  <GoogleIcon />
-                )}
-                Sign In with Google
-              </Button>
               <Button
                 variant="secondary"
                 className="w-full"

@@ -146,21 +146,24 @@ export default function Home() {
   return (
     <>
       <div className="min-h-screen w-full">
-        <header className="absolute top-4 right-4 z-10 flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={handleSignOut}>
-            <LogOut className="h-5 w-5" />
-            <span className="sr-only">Sign Out</span>
-          </Button>
-          <ThemeToggle />
-        </header>
-        <main className="container mx-auto px-4 py-8 md:py-12">
-          <header className="text-center mb-12">
+        <header className="container mx-auto px-4 py-4 flex justify-between items-center">
             <div className="inline-flex items-center gap-3">
-              <Beaker className="h-10 w-10 text-primary" />
-              <h1 className="text-4xl md:text-5xl font-bold tracking-tight bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+              <Beaker className="h-8 w-8 text-primary" />
+              <h1 className="text-2xl font-bold tracking-tight bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
                 ABG Insights
               </h1>
             </div>
+            <div className="flex items-center gap-4">
+                <ThemeToggle />
+                <Button variant="ghost" size="icon" onClick={handleSignOut}>
+                    <LogOut className="h-5 w-5" />
+                    <span className="sr-only">Sign Out</span>
+                </Button>
+            </div>
+        </header>
+
+        <main className="container mx-auto px-4 py-8 md:py-12">
+          <header className="text-center mb-12">
             <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
               Your AI-powered assistant for rapid Arterial Blood Gas analysis.
             </p>

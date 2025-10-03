@@ -121,6 +121,7 @@ export default function Home() {
               setHistory(JSON.parse(savedHistory));
           }
       }
+      window.scrollTo(0, 0);
     } else if (!isUserLoading) {
       setHistory([]);
       resetPage();

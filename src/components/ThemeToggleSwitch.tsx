@@ -62,10 +62,10 @@ export function ThemeToggleSwitch() {
               initial="initial"
               animate="animate"
               exit="exit"
-              className="absolute left-4 w-full h-full"
+              className="absolute inset-0 flex items-center justify-center"
             >
-              <Cloud className="absolute h-5 w-5 text-white" style={{ top: '6px', left: '45px' }} />
-              <Cloud className="absolute h-4 w-4 text-white" style={{ top: '18px', left: '30px' }} />
+              <Cloud className="absolute h-5 w-5 text-white" style={{ left: '60%' }} />
+              <Cloud className="absolute h-4 w-4 text-white" style={{ left: '45%', top: '60%' }} />
             </motion.div>
           )}
         </AnimatePresence>
@@ -77,11 +77,11 @@ export function ThemeToggleSwitch() {
               initial="initial"
               animate="animate"
               exit="exit"
-              className="absolute right-4 w-full h-full"
+              className="absolute inset-0 flex items-center justify-center"
             >
-              <Star className="absolute h-3 w-3 text-yellow-300" style={{ top: '8px', left: '15px' }} />
-              <Star className="absolute h-2 w-2 text-yellow-300" style={{ top: '20px', left: '25px' }} />
-              <Star className="absolute h-1 w-1 text-yellow-300" style={{ top: '10px', left: '40px' }} />
+              <Star className="absolute h-3 w-3 text-yellow-300" style={{ left: '20%', top: '30%' }} />
+              <Star className="absolute h-2 w-2 text-yellow-300" style={{ left: '35%', top: '60%' }} />
+              <Star className="absolute h-1 w-1 text-yellow-300" style={{ left: '25%', top: '15%' }} />
             </motion.div>
           )}
         </AnimatePresence>

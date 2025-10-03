@@ -1,10 +1,8 @@
 "use server";
 
 import { z } from "zod";
-import { automatedAbgInterpretation } from "@/ai/flows/automated-abg-interpretation";
-import { suggestPossibleConditions } from "@/ai/flows/diagnostic-suggestions";
-import { treatmentRecommendations } from "@/ai/flows/treatment-recommendations";
 import { AbgFormSchema, type AbgFormState } from "@/app/schema";
+import { fullAbgAnalysis } from "@/ai/flows/full-abg-analysis";
 
 
 export async function analyzeAbg(
@@ -19,48 +17,16 @@ export async function analyzeAbg(
   }
 
   try {
-    const { pH, pCO2, HCO3, PaO2, BE } = validatedFields.data;
+    const analysisResult = await fullAbgAnalysis(validatedFields.data);
 
-    // 1. Automated Analysis
-    const interpretationResult = await automatedAbgInterpretation({
-      pH,
-      pCO2,
-      HCO3,
-      PaO2,
-      BE,
-    });
-    if (!interpretationResult?.interpretation) {
-      throw new Error("Failed to get ABG interpretation from the AI model.");
+    if (!analysisResult?.interpretation || !analysisResult?.possibleConditions || !analysisResult?.treatmentRecommendations) {
+       throw new Error("The AI model returned an incomplete analysis. Please try again.");
     }
-    const interpretation = interpretationResult.interpretation;
-
-    // 2. Diagnostic Suggestions
-    const conditionsResult = await suggestPossibleConditions({
-      abgInterpretation: interpretation,
-    });
-    if (!conditionsResult?.possibleConditions) {
-      throw new Error(
-        "Failed to get diagnostic suggestions from the AI model."
-      );
-    }
-    const possibleConditions = conditionsResult.possibleConditions;
-
-    // 3. Treatment Recommendations
-    const treatmentResult = await treatmentRecommendations({
-      diagnosis: interpretation,
-      possibleConditions,
-    });
-    if (!treatmentResult?.treatmentRecommendations) {
-      throw new Error(
-        "Failed to get treatment recommendations from the AI model."
-      );
-    }
-    const treatmentRecommendationsText = treatmentResult.treatmentRecommendations;
 
     return {
-      interpretation,
-      possibleConditions,
-      treatmentRecommendations: treatmentRecommendationsText,
+      interpretation: analysisResult.interpretation,
+      possibleConditions: analysisResult.possibleConditions,
+      treatmentRecommendations: analysisResult.treatmentRecommendations,
     };
   } catch (e) {
     console.error(e);

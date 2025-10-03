@@ -57,7 +57,7 @@ export function ThemeToggleSwitch() {
         onClick={toggleTheme}
         className={cn(
           'relative flex h-12 w-28 cursor-pointer items-center rounded-full p-1 transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 overflow-hidden',
-          isDark ? 'bg-indigo-900' : 'bg-sky-500'
+          isDark ? 'bg-slate-900' : 'bg-sky-500'
         )}
         aria-label={`Switch to ${isDark ? 'light' : 'dark'} mode`}
       >
@@ -73,13 +73,13 @@ export function ThemeToggleSwitch() {
           >
             {isDark ? (
               <div className="absolute inset-x-0 mx-auto flex items-center justify-center w-1/2">
-                <Star className="absolute h-3 w-3 text-yellow-300" style={{ right: '35%', top: '60%' }} fill="currentColor" />
-                <Star className="absolute h-4 w-4 text-yellow-300" style={{ right: '20%', top: '30%' }} fill="currentColor" />
+                <Star className="absolute h-4 w-4 text-white" style={{ right: '20%', top: '30%' }} fill="currentColor" />
+                <Star className="absolute h-3 w-3 text-white" style={{ right: '35%', top: '60%' }} fill="currentColor" />
               </div>
             ) : (
               <div className="absolute inset-x-0 mx-auto flex items-center justify-center w-1/2">
-                <Cloud className="absolute h-5 w-5 text-white" style={{ left: '45%', top: '60%' }} fill="currentColor"/>
                 <Cloudy className="absolute h-6 w-6 text-white" style={{ left: '20%', top: '25%' }} fill="white" />
+                <Cloud className="absolute h-5 w-5 text-white" style={{ left: '45%', top: '60%' }} fill="currentColor"/>
               </div>
             )}
           </motion.div>
@@ -111,7 +111,7 @@ export function ThemeToggleSwitch() {
                 animate={{ rotate: 0, scale: 1, transition: spring }}
                 exit={{ rotate: -90, scale: 0, transition: spring }}
               >
-                <Sun className="h-5 w-5 text-yellow-300" fill="currentColor" />
+                <Sun className="h-5 w-5 text-white" fill="currentColor" />
               </motion.div>
             )}
           </AnimatePresence>

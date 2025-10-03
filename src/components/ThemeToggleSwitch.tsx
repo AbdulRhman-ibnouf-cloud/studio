@@ -10,7 +10,7 @@ import { cn } from '@/lib/utils';
 const SunIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" {...props}>
         <path d="M12 16a4 4 0 100-8 4 4 0 000 8z" />
-        <path fillRule="evenodd" d="M12 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm0 20a1 1 0 01-1-1v-1a1 1 0 112 0v1a1 1 0 01-1 1zM2 12a1 1 0 011-1h1a1 1 0 110 2H3a1 1 0 01-1-1zm20 0a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.636 5.636a1 1 0 011.414 0l.707.707a1 1 0 01-1.414 1.414l-.707-.707a1 1 0 010-1.414zm12.728 12.728a1 1 0 01-1.414 0l-.707-.707a1 1 0 011.414-1.414l.707.707a1 1 0 010 1.414zM5.636 18.364a1 1 0 010-1.414l.707-.707a1 1 0 011.414 1.414l-.707.707a1 1 0 01-1.414 0zm12.728-12.728a1 1 0 010 1.414l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 0z" clipRule="evenodd" />
+        <path fillRule="evenodd" d="M12 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm0 20a1 1 0 01-1-1v-1a1 1 0 112 0v1a1 1 0 01-1 1zM2 12a1 1 0 011-1h1a1 1 0 110 2H3a1 1 0 01-1-1zm20 0a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.636 5.636a1 1 0 011.414 0l.707.707a1 1 0 01-1.414 1.414l-.707-.707a1 1 0 010-1.414zm12.728 12.728a1 1 0 01-1.414 0l-.707-.707a1 1 0 011.414-1.414l.707.707a1 1 0 010 1.414zM5.636 18.364a1 1 0 010-1.414l.707-.707a1 1 0 011.414 1.414l-.707.707a1 1 0 01-1.414 0zm12.728-12.728a1 1 0 010 1.414l-.707.707a1 1 0 01-1.414-1.414l.707.707a1 1 0 011.414 0z" clipRule="evenodd" />
     </svg>
 );
 
@@ -50,7 +50,7 @@ export function ThemeToggleSwitch() {
       <button
         onClick={toggleTheme}
         className={cn(
-          'relative flex h-10 w-20 cursor-pointer items-center rounded-full p-1 transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 overflow-hidden',
+          'relative flex h-8 w-16 cursor-pointer items-center rounded-full p-1 transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 overflow-hidden',
           isDark ? 'bg-black' : 'bg-sky-500'
         )}
         aria-label={`Switch to ${isDark ? 'light' : 'dark'} mode`}
@@ -67,7 +67,6 @@ export function ThemeToggleSwitch() {
             >
               <Cloud className="h-4 w-4 text-white/90 absolute -right-1 top-2" fill="white" />
               <Cloudy className="h-5 w-5 text-white/90 absolute right-3 bottom-1" fill="white" />
-              <Cloud className="h-3 w-3 text-white/90 absolute right-6 top-5" fill="white" />
             </motion.div>
           )}
         </AnimatePresence>
@@ -82,7 +81,6 @@ export function ThemeToggleSwitch() {
               className="absolute inset-0 flex items-center justify-center"
             >
                 <Star className="h-3 w-3 text-white absolute left-2 top-2" fill="white"/>
-                <Star className="h-4 w-4 text-white absolute left-6 top-4" fill="white"/>
                 <Star className="h-2 w-2 text-white absolute left-9 bottom-2" fill="white"/>
             </motion.div>
           )}
@@ -92,7 +90,7 @@ export function ThemeToggleSwitch() {
           layout
           transition={spring}
           className={cn(
-            'absolute z-10 flex h-8 w-8 items-center justify-center',
+            'absolute z-10 flex h-6 w-6 items-center justify-center',
             isDark ? 'right-1' : 'left-1'
           )}
         >
@@ -100,18 +98,20 @@ export function ThemeToggleSwitch() {
             {isDark ? (
               <motion.div
                 key="moon"
-                initial={{ rotate: -90, scale: 0 }}
-                animate={{ rotate: 180, scale: 1, transition: spring }}
-                exit={{ rotate: 90, scale: 0, transition: spring }}
+                initial={{ rotate: 90, scale: 0 }}
+                animate={{ rotate: 0, scale: 1, transition: spring }}
+                exit={{ rotate: 270, scale: 0, transition: spring }}
+                className="absolute"
               >
                 <MoonIcon className="h-5 w-5 text-white" />
               </motion.div>
             ) : (
               <motion.div
                 key="sun"
-                initial={{ rotate: 90, scale: 0 }}
+                initial={{ rotate: -90, scale: 0 }}
                 animate={{ rotate: 0, scale: 1, transition: spring }}
-                exit={{ rotate: -90, scale: 0, transition: spring }}
+                exit={{ rotate: 90, scale: 0, transition: spring }}
+                className="absolute"
               >
                 <SunIcon className="h-5 w-5 text-white" />
               </motion.div>
@@ -122,4 +122,5 @@ export function ThemeToggleSwitch() {
     </div>
   );
 }
+
 

@@ -108,14 +108,14 @@ export default function Home() {
     resolver: zodResolver(AbgFormSchema),
     defaultValues: defaultFormValues,
   });
-
+  
   const resetPage = useCallback(() => {
     setIsLoading(false);
     setIsScanning(false);
     setResults(null);
     setError(null);
     form.reset(defaultFormValues);
-  }, [form, defaultFormValues]);
+  }, [form]);
 
   useEffect(() => {
     if (user) {

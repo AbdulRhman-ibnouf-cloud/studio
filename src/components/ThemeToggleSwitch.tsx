@@ -85,7 +85,7 @@ export function ThemeToggleSwitch() {
             >
                 <Star className="absolute h-3 w-3 text-yellow-300" style={{ top: '-8px', left: '0px' }} />
                 <Star className="absolute h-2 w-2 text-yellow-300" style={{ top: '10px', left: '10px' }} />
-                <Star className="absolute h-2 w-2 text-yellow-300" style={{ top: '-2px', left: '25px' }}/>
+                <Star className="absolute h-1 w-1 text-yellow-300" style={{ top: '-2px', left: '25px' }}/>
             </motion.div>
         )}
         </AnimatePresence>
@@ -98,7 +98,7 @@ export function ThemeToggleSwitch() {
                 exit={{ opacity: 0, x: 20, transition: spring }}
                 className="absolute right-4"
             >
-                <Cloud className="absolute h-4 w-4 text-white" style={{ top: '-5px', right: '0px' }} />
+                <Cloud className="absolute h-5 w-5 text-white" style={{ top: '-5px', right: '0px' }} />
                 <Cloud className="absolute h-3 w-3 text-white" style={{ top: '8px', right: '10px' }} />
             </motion.div>
         )}

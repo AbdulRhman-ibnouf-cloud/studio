@@ -243,6 +243,7 @@ export default function Home() {
     setIsSpeaking(false);
     setSpeakingCardKey(null);
     form.reset(defaultFormValues);
+    setIsHistoryOpen(false);
   }, [form]);
 
   useEffect(() => {

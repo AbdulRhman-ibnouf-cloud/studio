@@ -156,9 +156,9 @@ export function Login() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background p-4">
       <div className="text-center mb-8">
-        <div className="inline-flex items-center gap-3">
+        <div className="inline-flex items-center gap-0">
           <Beaker className="h-10 w-10 text-primary" />
-          <h1 className="text-4xl md:text-5xl font-bold tracking-tight bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+          <h1 className="-ml-1 text-4xl md:text-5xl font-bold tracking-tight bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
             ABG AI Analyser
           </h1>
         </div>

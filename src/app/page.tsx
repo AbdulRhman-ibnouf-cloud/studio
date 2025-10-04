@@ -475,9 +475,9 @@ export default function Home() {
       />
       <div className="min-h-screen w-full">
         <header className="container mx-auto px-4 py-4 flex justify-between items-center">
-            <div className="inline-flex items-center gap-3">
+            <div className="inline-flex items-center gap-0">
               <Beaker className="h-8 w-8 text-primary" />
-              <h1 className="text-2xl font-bold tracking-tight bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+              <h1 className="-ml-1 text-2xl font-bold tracking-tight bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
                 ABG AI Analyzer
               </h1>
             </div>

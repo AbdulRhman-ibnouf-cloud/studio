@@ -4,7 +4,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import type { z } from "zod";
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import {
   Beaker,
   Stethoscope,
@@ -21,6 +21,8 @@ import {
   History,
   Settings,
   Camera,
+  Volume2,
+  Play,
 } from "lucide-react";
 import { useAuth, useUser } from "@/firebase";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -43,7 +45,7 @@ import {
 } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
-import { analyzeAbg } from "@/app/actions";
+import { analyzeAbg, getAudioForText } from "@/app/actions";
 import { AbgFormSchema, type AbgFormState } from "@/app/schema";
 import { Slider } from "@/components/ui/slider";
 import { Login } from "@/components/Login";
@@ -59,6 +61,8 @@ import { localAbgAnalysis } from "@/lib/local-abg-analysis";
 import { AbgScanDialog } from "@/components/AbgScanDialog";
 import { extractAbgFromImage } from "@/ai/flows/extract-abg-from-image";
 import { ThemeToggleSwitch } from "@/components/ThemeToggleSwitch";
+import { useToast } from "@/hooks/use-toast";
+
 
 type AnalysisResult = Omit<AbgFormState, "error"> & {
   timestamp: string;
@@ -92,6 +96,9 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [isScanDialogOpen, setIsScanDialogOpen] = useState(false);
+  const [audioState, setAudioState] = useState<{ [key: string]: { playing: boolean; loading: boolean; dataUri: string | null } }>({});
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const { toast } = useToast();
 
   const defaultFormValues = {
     pH: 7.4,
@@ -168,6 +175,7 @@ export default function Home() {
     setIsLoading(true);
     setResults(null);
     setError(null);
+    setAudioState({});
   
     // Perform local analysis first
     const localResult = localAbgAnalysis(values);
@@ -258,6 +266,73 @@ export default function Home() {
     return name.substring(0, 2).toUpperCase();
   };
 
+  const handlePlayAudio = async (key: string, text: string) => {
+    // If another audio is playing, stop it first
+    if (audioRef.current && !audioRef.current.paused) {
+      audioRef.current.pause();
+      // Reset all other playing states
+      setAudioState(prev => {
+        const newState = { ...prev };
+        Object.keys(newState).forEach(k => {
+          newState[k] = { ...newState[k], playing: false };
+        });
+        return newState;
+      });
+    }
+    
+    const currentState = audioState[key];
+    
+    // If it's currently playing, pause it
+    if (currentState?.playing) {
+      audioRef.current?.pause();
+      setAudioState(prev => ({ ...prev, [key]: { ...prev[key], playing: false } }));
+      return;
+    }
+  
+    // If we already have the audio data, just play it
+    if (currentState?.dataUri) {
+      if (!audioRef.current) {
+        audioRef.current = new Audio();
+        audioRef.current.onended = () => {
+          setAudioState(prev => ({ ...prev, [key]: { ...prev[key], playing: false } }));
+        };
+      }
+      audioRef.current.src = currentState.dataUri;
+      audioRef.current.play();
+      setAudioState(prev => ({ ...prev, [key]: { ...prev[key], playing: true } }));
+      return;
+    }
+  
+    // Otherwise, fetch the audio
+    setAudioState(prev => ({ ...prev, [key]: { loading: true, playing: false, dataUri: null } }));
+  
+    const { audioDataUri, error: audioError } = await getAudioForText(text);
+  
+    if (audioError || !audioDataUri) {
+      toast({
+        variant: "destructive",
+        title: "Audio Error",
+        description: audioError || "Failed to generate audio.",
+      });
+      setAudioState(prev => ({ ...prev, [key]: { loading: false, playing: false, dataUri: null } }));
+      return;
+    }
+  
+    if (!audioRef.current) {
+      audioRef.current = new Audio();
+      audioRef.current.onended = () => {
+        setAudioState(prev => ({ ...prev, [key]: { ...prev[key], playing: false } }));
+      };
+    }
+  
+    audioRef.current.src = audioDataUri;
+    audioRef.current.play();
+    setAudioState(prev => ({
+      ...prev,
+      [key]: { loading: false, playing: true, dataUri: audioDataUri },
+    }));
+  };
+
   if (isUserLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
@@ -272,6 +347,7 @@ export default function Home() {
 
   const resultCards = [
     {
+      key: "analysis",
       title: "Automated Analysis",
       icon: Stethoscope,
       content: results?.interpretation,
@@ -279,6 +355,7 @@ export default function Home() {
       iconClass: "text-blue-500",
     },
     {
+      key: "suggestions",
       title: "Diagnostic Suggestions",
       icon: BrainCircuit,
       content: results?.possibleConditions,
@@ -286,6 +363,7 @@ export default function Home() {
       iconClass: "text-purple-500",
     },
     {
+      key: "recommendations",
       title: "Treatment Recommendations",
       icon: HeartPulse,
       content: results?.treatmentRecommendations,
@@ -524,11 +602,11 @@ export default function Home() {
                       (card, index) =>
                         card.content && (
                           <Card
-                            key={card.title}
+                            key={card.key}
                             className={`shadow-lg animate-in fade-in-50 slide-in-from-bottom-5 duration-500 ${card.bgClass}`}
                             style={{ animationDelay: `${index * 150}ms` }}
                           >
-                            <CardHeader>
+                            <CardHeader className="flex flex-row items-center justify-between">
                               <CardTitle className="flex items-center gap-3">
                                 <div
                                   className={`p-2 rounded-full bg-white dark:bg-background ${card.iconClass}`}
@@ -537,6 +615,22 @@ export default function Home() {
                                 </div>
                                 {card.title}
                               </CardTitle>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => handlePlayAudio(card.key, card.content!)}
+                                disabled={audioState[card.key]?.loading}
+                                className="text-muted-foreground hover:text-foreground"
+                              >
+                                {audioState[card.key]?.loading ? (
+                                  <Loader2 className="h-5 w-5 animate-spin" />
+                                ) : audioState[card.key]?.playing ? (
+                                  <Play className="h-5 w-5" />
+                                ) : (
+                                  <Volume2 className="h-5 w-5" />
+                                )}
+                                <span className="sr-only">Read text</span>
+                              </Button>
                             </CardHeader>
                             <CardContent>
                                <MarkdownContent content={card.content} />
@@ -554,7 +648,3 @@ export default function Home() {
     </>
   );
 }
-
-    
-
-    

@@ -1,5 +1,4 @@
 
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -139,7 +138,7 @@ const ResultDisplay = ({
 }) => {
   return (
     <div className="animate-in fade-in-50 duration-500 max-w-2xl mx-auto space-y-6">
-      {resultCardsConfig.map((card, index) => {
+      {resultCardsConfig.map((card) => {
         const content = results[card.contentKey as keyof typeof results] as string | undefined;
         return content ? (
           <Card
@@ -506,7 +505,7 @@ export default function Home() {
                             <p className="text-sm text-muted-foreground">Dr. AbdulRhman Ibn Ouf, Anaesthesiologist</p>
                         </div>
                         <div className="space-y-2">
-                             <a href="mailto:ibnouf9@gmail.com" className="w-full">
+                             <a href="mailto:x5ibnouf@gmail.com" className="w-full">
                                 <Button variant="outline" className="w-full">
                                     <Mail className="mr-2 h-4 w-4" />
                                     Contact Developer

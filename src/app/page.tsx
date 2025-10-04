@@ -66,6 +66,7 @@ import { extractAbgFromImage } from "@/ai/flows/extract-abg-from-image";
 import { ThemeToggleSwitch } from "@/components/ThemeToggleSwitch";
 import { useToast } from "@/hooks/use-toast";
 import { Separator } from "@/components/ui/separator";
+import { SplashScreen } from "@/components/SplashScreen";
 
 
 type AnalysisResult = Omit<AbgFormState, "error"> & {
@@ -193,8 +194,16 @@ export default function Home() {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [speakingCardKey, setSpeakingCardKey] = useState<string | null>(null);
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+  const [isAppLoading, setIsAppLoading] = useState(true);
 
   const { toast } = useToast();
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsAppLoading(false);
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     const loadVoices = () => {
@@ -431,6 +440,10 @@ export default function Home() {
 
     window.speechSynthesis.speak(utterance);
   };
+  
+  if (isAppLoading) {
+    return <SplashScreen />;
+  }
 
   if (isUserLoading) {
     return (
@@ -464,7 +477,7 @@ export default function Home() {
             <div className="inline-flex items-center gap-3">
               <Beaker className="h-8 w-8 text-primary" />
               <h1 className="text-2xl font-bold tracking-tight bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                ABG AI Analyser
+                ABG AI Analyzer
               </h1>
             </div>
             <div className="flex items-center gap-2">

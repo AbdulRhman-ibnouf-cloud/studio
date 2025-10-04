@@ -61,6 +61,25 @@ export function Login() {
   ) => {
     setLoading(action);
     setError(null);
+    
+    if (action === 'email-signin' || action === 'email-signup') {
+      if (!email && !password) {
+        setError("Please enter your email and password.");
+        setLoading(null);
+        return;
+      }
+      if (!email) {
+        setError("Please enter your email.");
+        setLoading(null);
+        return;
+      }
+      if (!password) {
+        setError("Please enter your password.");
+        setLoading(null);
+        return;
+      }
+    }
+    
     const onError = (e: any) => {
       let message = 'An unexpected error occurred. Please try again.';
       if (e.code === 'auth/weak-password') {

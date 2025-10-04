@@ -22,7 +22,7 @@ import {
   Settings,
   Camera,
   Volume2,
-  Play,
+  Pause,
 } from "lucide-react";
 import { useAuth, useUser } from "@/firebase";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -45,7 +45,7 @@ import {
 } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
-import { analyzeAbg, getAudioForText } from "@/app/actions";
+import { analyzeAbg } from "@/app/actions";
 import { AbgFormSchema, type AbgFormState } from "@/app/schema";
 import { Slider } from "@/components/ui/slider";
 import { Login } from "@/components/Login";
@@ -96,9 +96,23 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [isScanDialogOpen, setIsScanDialogOpen] = useState(false);
-  const [audioState, setAudioState] = useState<{ [key: string]: { playing: boolean; loading: boolean; dataUri: string | null } }>({});
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [speakingCardKey, setSpeakingCardKey] = useState<string | null>(null);
+  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+
   const { toast } = useToast();
+
+  useEffect(() => {
+    const loadVoices = () => {
+      const availableVoices = window.speechSynthesis.getVoices();
+      if (availableVoices.length > 0) {
+        setVoices(availableVoices);
+      }
+    };
+    window.speechSynthesis.onvoiceschanged = loadVoices;
+    loadVoices();
+  }, []);
 
   const defaultFormValues = {
     pH: 7.4,
@@ -118,6 +132,9 @@ export default function Home() {
     setIsScanning(false);
     setResults(null);
     setError(null);
+    window.speechSynthesis.cancel();
+    setIsSpeaking(false);
+    setSpeakingCardKey(null);
     form.reset(defaultFormValues);
   }, [form]);
 
@@ -175,13 +192,13 @@ export default function Home() {
     setIsLoading(true);
     setResults(null);
     setError(null);
-    setAudioState({});
+    setIsSpeaking(false);
+    setSpeakingCardKey(null);
+    window.speechSynthesis.cancel();
   
-    // Perform local analysis first
     const localResult = localAbgAnalysis(values);
   
     if (typeof window !== 'undefined' && !window.navigator.onLine) {
-        // If offline, use only local results
         const newResult: AnalysisResult = {
           interpretation: localResult.interpretation,
           possibleConditions: "Offline: AI-powered suggestions unavailable.",
@@ -204,13 +221,11 @@ export default function Home() {
       return;
     }
 
-    // If online, proceed with AI analysis
     try {
       const response = await analyzeAbg(values);
 
       if ("error" in response) {
         setError(response.error);
-        // Fallback to local analysis on AI error
         setResults({
             interpretation: localResult.interpretation,
             possibleConditions: 'AI analysis failed.',
@@ -225,8 +240,6 @@ export default function Home() {
           timestamp: new Date().toISOString(),
           inputs: values,
         };
-        // We can choose to blend local and AI results here if desired
-        // For now, we prefer the more detailed AI result when online
         newResult.interpretation = `${localResult.interpretation} ${response.interpretation || ''}`.trim()
         setResults(newResult);
         const updatedHistory = [newResult, ...history];
@@ -236,7 +249,6 @@ export default function Home() {
     } catch (e) {
       const errorMessage = e instanceof Error ? e.message : "An unknown error occurred during analysis.";
       setError(`Sorry, we couldn't complete the analysis. ${errorMessage}`);
-       // Fallback to local analysis on exception
        setResults({
         interpretation: localResult.interpretation,
         possibleConditions: 'AI analysis failed.',
@@ -266,71 +278,54 @@ export default function Home() {
     return name.substring(0, 2).toUpperCase();
   };
 
-  const handlePlayAudio = async (key: string, text: string) => {
-    // If another audio is playing, stop it first
-    if (audioRef.current && !audioRef.current.paused) {
-      audioRef.current.pause();
-      // Reset all other playing states
-      setAudioState(prev => {
-        const newState = { ...prev };
-        Object.keys(newState).forEach(k => {
-          newState[k] = { ...newState[k], playing: false };
-        });
-        return newState;
-      });
-    }
-    
-    const currentState = audioState[key];
-    
-    // If it's currently playing, pause it
-    if (currentState?.playing) {
-      audioRef.current?.pause();
-      setAudioState(prev => ({ ...prev, [key]: { ...prev[key], playing: false } }));
+  const handlePlayAudio = (key: string, text: string) => {
+    if (speakingCardKey === key && isSpeaking) {
+      window.speechSynthesis.cancel();
+      setIsSpeaking(false);
+      setSpeakingCardKey(null);
       return;
     }
-  
-    // If we already have the audio data, just play it
-    if (currentState?.dataUri) {
-      if (!audioRef.current) {
-        audioRef.current = new Audio();
-        audioRef.current.onended = () => {
-          setAudioState(prev => ({ ...prev, [key]: { ...prev[key], playing: false } }));
-        };
-      }
-      audioRef.current.src = currentState.dataUri;
-      audioRef.current.play();
-      setAudioState(prev => ({ ...prev, [key]: { ...prev[key], playing: true } }));
-      return;
-    }
-  
-    // Otherwise, fetch the audio
-    setAudioState(prev => ({ ...prev, [key]: { loading: true, playing: false, dataUri: null } }));
-  
-    const { audioDataUri, error: audioError } = await getAudioForText(text);
-  
-    if (audioError || !audioDataUri) {
+
+    window.speechSynthesis.cancel();
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    
+    // Find a suitable male voice
+    const maleVoice = voices.find(voice => voice.name.toLowerCase().includes('male') && voice.lang.startsWith('en')) || voices.find(voice => voice.lang.startsWith('en'));
+    
+    if (maleVoice) {
+      utterance.voice = maleVoice;
+    } else {
       toast({
         variant: "destructive",
         title: "Audio Error",
-        description: audioError || "Failed to generate audio.",
+        description: "No suitable voice found on your system.",
       });
-      setAudioState(prev => ({ ...prev, [key]: { loading: false, playing: false, dataUri: null } }));
       return;
     }
-  
-    if (!audioRef.current) {
-      audioRef.current = new Audio();
-      audioRef.current.onended = () => {
-        setAudioState(prev => ({ ...prev, [key]: { ...prev[key], playing: false } }));
-      };
-    }
-  
-    audioRef.current.src = audioDataUri;
-    audioRef.current.play();
-    setAudioState(prev => ({
-      ...prev,
-      [key]: { loading: false, playing: true, dataUri: audioDataUri },
-    }));
+
+    utterance.onstart = () => {
+      setIsSpeaking(true);
+      setSpeakingCardKey(key);
+    };
+
+    utterance.onend = () => {
+      setIsSpeaking(false);
+      setSpeakingCardKey(null);
+    };
+    
+    utterance.onerror = (event) => {
+      console.error('SpeechSynthesis Error:', event.error);
+      toast({
+        variant: "destructive",
+        title: "Audio Error",
+        description: `Could not play audio: ${event.error}`,
+      });
+      setIsSpeaking(false);
+      setSpeakingCardKey(null);
+    };
+
+    window.speechSynthesis.speak(utterance);
   };
 
   if (isUserLoading) {
@@ -619,13 +614,10 @@ export default function Home() {
                                 variant="ghost"
                                 size="icon"
                                 onClick={() => handlePlayAudio(card.key, card.content!)}
-                                disabled={audioState[card.key]?.loading}
                                 className="text-muted-foreground hover:text-foreground"
                               >
-                                {audioState[card.key]?.loading ? (
-                                  <Loader2 className="h-5 w-5 animate-spin" />
-                                ) : audioState[card.key]?.playing ? (
-                                  <Play className="h-5 w-5" />
+                                {speakingCardKey === card.key && isSpeaking ? (
+                                  <Pause className="h-5 w-5" />
                                 ) : (
                                   <Volume2 className="h-5 w-5" />
                                 )}

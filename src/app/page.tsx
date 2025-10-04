@@ -23,6 +23,7 @@ import {
   Camera,
   Volume2,
   Pause,
+  UserPlus,
 } from "lucide-react";
 import { useAuth, useUser } from "@/firebase";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -231,7 +232,7 @@ export default function Home() {
 
   useEffect(() => {
     if (user) {
-      if (history.length === 0) {
+      if (history.length === 0 && !user.isAnonymous) {
           const savedHistory = localStorage.getItem(`abgAnalysisHistory_${user.uid}`);
           if (savedHistory) {
               setHistory(JSON.parse(savedHistory));
@@ -277,7 +278,7 @@ export default function Home() {
   };
   
   const saveHistory = (newHistory: AnalysisResult[]) => {
-    if (user) {
+    if (user && !user.isAnonymous) {
       localStorage.setItem(`abgAnalysisHistory_${user.uid}`, JSON.stringify(newHistory));
     }
   }
@@ -511,31 +512,45 @@ export default function Home() {
               <SheetHeader>
                 <SheetTitle>Analysis History</SheetTitle>
               </SheetHeader>
-              <ScrollArea className="h-[calc(100%-4rem)]">
-                <div className="space-y-4 py-4">
-                  {history.length > 0 ? (
-                    history.map((item, index) => (
-                      <Card key={index} className="cursor-pointer hover:bg-muted/50" onClick={() => displayResults(item)}>
-                        <CardHeader>
-                          <CardTitle className="text-base">
-                            {new Date(item.timestamp).toLocaleString()}
-                          </CardTitle>
-                          <CardDescription>
-                            pH: {item.inputs.pH}, pCO₂: {item.inputs.pCO2}, HCO₃⁻: {item.inputs.HCO3}
-                          </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                          <p className="truncate text-sm text-muted-foreground">{item.interpretation}</p>
-                        </CardContent>
-                      </Card>
-                    ))
-                  ) : (
-                    <p className="text-center text-muted-foreground">
-                      No history yet.
+              {user.isAnonymous ? (
+                <div className="flex flex-col items-center justify-center h-full text-center px-4">
+                    <History className="h-16 w-16 text-muted-foreground/50 mb-4" />
+                    <h3 className="text-lg font-semibold">Sign Up to Save Your History</h3>
+                    <p className="text-muted-foreground mt-2 mb-6">
+                        Create an account to keep a permanent record of your analyses.
                     </p>
-                  )}
+                    <Button onClick={handleSignOut} className="w-full">
+                        <UserPlus className="mr-2 h-4 w-4" />
+                        Sign Up to Save History
+                    </Button>
                 </div>
-              </ScrollArea>
+              ) : (
+                <ScrollArea className="h-[calc(100%-4rem)]">
+                  <div className="space-y-4 py-4">
+                    {history.length > 0 ? (
+                      history.map((item, index) => (
+                        <Card key={index} className="cursor-pointer hover:bg-muted/50" onClick={() => displayResults(item)}>
+                          <CardHeader>
+                            <CardTitle className="text-base">
+                              {new Date(item.timestamp).toLocaleString()}
+                            </CardTitle>
+                            <CardDescription>
+                              pH: {item.inputs.pH}, pCO₂: {item.inputs.pCO2}, HCO₃⁻: {item.inputs.HCO3}
+                            </CardDescription>
+                          </CardHeader>
+                          <CardContent>
+                            <p className="truncate text-sm text-muted-foreground">{item.interpretation}</p>
+                          </CardContent>
+                        </Card>
+                      ))
+                    ) : (
+                      <p className="text-center text-muted-foreground py-10">
+                        No history yet.
+                      </p>
+                    )}
+                  </div>
+                </ScrollArea>
+              )}
             </SheetContent>
           </Sheet>
 
@@ -678,7 +693,3 @@ export default function Home() {
     </>
   );
 }
-
-    
-
-    

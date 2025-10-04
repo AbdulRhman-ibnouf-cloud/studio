@@ -133,8 +133,8 @@ const ResultDisplay = ({
   handlePlayAudio: (key: string, text: string) => void;
 }) => {
   return (
-    <div className="grid lg:grid-cols-5 gap-8 animate-in fade-in-50 duration-500">
-      <div className="lg:col-span-2">
+    <div className="grid md:grid-cols-3 gap-8 animate-in fade-in-50 duration-500">
+      <div className="md:col-span-1">
         <Card className="shadow-lg">
           <CardHeader>
             <CardTitle>Input Values</CardTitle>
@@ -152,7 +152,7 @@ const ResultDisplay = ({
           </CardContent>
         </Card>
       </div>
-      <div className="lg:col-span-3 space-y-6">
+      <div className="md:col-span-2 space-y-6">
         {resultCardsConfig.map((card, index) => {
           const content = results[card.contentKey as keyof typeof results] as string | undefined;
           return content ? (
@@ -220,7 +220,6 @@ export default function Home() {
     window.speechSynthesis.onvoiceschanged = loadVoices;
     loadVoices();
     
-    // Cleanup function to cancel speech on component unmount
     return () => {
       window.speechSynthesis.cancel();
     };
@@ -428,7 +427,6 @@ export default function Home() {
     
     utterance.onerror = (event) => {
       if (event.error === 'interrupted') {
-        // This is expected when we cancel speech, so we don't show an error.
         console.log('Speech synthesis interrupted as expected.');
         return;
       }
@@ -558,117 +556,115 @@ export default function Home() {
             </SheetContent>
           </Sheet>
 
-          {!results && (
-            <header className="text-center mb-12 animate-in fade-in-50 duration-500">
-                <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-                    Your AI-powered assistant for rapid Arterial Blood Gas analysis.
-                </p>
-            </header>
-          )}
+          <div className="max-w-5xl mx-auto space-y-8">
+            {!results && (
+              <header className="text-center mb-12 animate-in fade-in-50 duration-500">
+                  <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
+                      Your AI-powered assistant for rapid Arterial Blood Gas analysis.
+                  </p>
+              </header>
+            )}
 
-
-          <div className="max-w-4xl mx-auto">
-             <Card className="shadow-lg mb-8">
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-xl">
-                    <FileText className="text-primary" />
-                    Patient ABG Values
-                    </CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <Form {...form}>
-                    <form
-                        onSubmit={form.handleSubmit(onSubmit)}
-                        className="space-y-6"
-                    >
-                        {formFieldsConfig.map((field) => (
-                        <FormField
-                            key={field.name}
-                            control={form.control}
-                            name={field.name}
-                            render={({ field: { value, onChange } }) => (
-                            <FormItem>
-                                <div className="flex justify-between items-baseline mb-2">
-                                <FormLabel className="flex items-center gap-2 font-medium">
-                                    <field.icon className="w-5 h-5 text-muted-foreground" />
-                                    {field.label}
-                                </FormLabel>
-                                <span className="text-lg font-bold text-primary w-24 text-right">
-                                    {value}
-                                </span>
-                                </div>
-                                <FormControl>
-                                <Slider
-                                    value={[value]}
-                                    onValueChange={(vals) => onChange(vals[0])}
-                                    min={field.min}
-                                    max={field.max}
-                                    step={field.step}
-                                    disabled={isLoading || isScanning}
-                                    className="[&>span:first-child]:h-2 [&>span:last-child]:h-5 [&>span:last-child]:w-5"
-                                />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                            )}
-                        />
-                        ))}
-                        
-                        <div className="flex flex-col sm:flex-row gap-2">
-                            <Button
-                            type="button"
-                            variant="outline"
-                            className="w-full font-semibold"
-                            onClick={() => setIsScanDialogOpen(true)}
-                            disabled={isLoading || isScanning}
-                            >
-                            <Camera className="mr-2 h-4 w-4" />
-                            Scan ABG Report
-                            </Button>
-                            <Button
-                            type="submit"
-                            className="w-full font-semibold"
-                            disabled={isLoading || isScanning || !user}
-                            size="lg"
-                            >
-                            {isLoading || isScanning ? (
-                                <>
-                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                {isScanning ? "Scanning..." : "Analyzing..."}
-                                </>
-                            ) : (
-                                "Analyze Now"
-                            )}
-                            </Button>
-                        </div>
-                    </form>
-                    </Form>
-                </CardContent>
+            <Card className="shadow-lg">
+              <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-xl">
+                  <FileText className="text-primary" />
+                  Patient ABG Values
+                  </CardTitle>
+              </CardHeader>
+              <CardContent>
+                  <Form {...form}>
+                  <form
+                      onSubmit={form.handleSubmit(onSubmit)}
+                      className="space-y-6"
+                  >
+                      {formFieldsConfig.map((field) => (
+                      <FormField
+                          key={field.name}
+                          control={form.control}
+                          name={field.name}
+                          render={({ field: { value, onChange } }) => (
+                          <FormItem>
+                              <div className="flex justify-between items-baseline mb-2">
+                              <FormLabel className="flex items-center gap-2 font-medium">
+                                  <field.icon className="w-5 h-5 text-muted-foreground" />
+                                  {field.label}
+                              </FormLabel>
+                              <span className="text-lg font-bold text-primary w-24 text-right">
+                                  {value}
+                              </span>
+                              </div>
+                              <FormControl>
+                              <Slider
+                                  value={[value]}
+                                  onValueChange={(vals) => onChange(vals[0])}
+                                  min={field.min}
+                                  max={field.max}
+                                  step={field.step}
+                                  disabled={isLoading || isScanning}
+                                  className="[&>span:first-child]:h-2 [&>span:last-child]:h-5 [&>span:last-child]:w-5"
+                              />
+                              </FormControl>
+                              <FormMessage />
+                          </FormItem>
+                          )}
+                      />
+                      ))}
+                      
+                      <div className="flex flex-col sm:flex-row gap-2">
+                          <Button
+                          type="button"
+                          variant="outline"
+                          className="w-full font-semibold"
+                          onClick={() => setIsScanDialogOpen(true)}
+                          disabled={isLoading || isScanning}
+                          >
+                          <Camera className="mr-2 h-4 w-4" />
+                          Scan ABG Report
+                          </Button>
+                          <Button
+                          type="submit"
+                          className="w-full font-semibold"
+                          disabled={isLoading || isScanning || !user}
+                          size="lg"
+                          >
+                          {isLoading || isScanning ? (
+                              <>
+                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                              {isScanning ? "Scanning..." : "Analyzing..."}
+                              </>
+                          ) : (
+                              "Analyze Now"
+                          )}
+                          </Button>
+                      </div>
+                  </form>
+                  </Form>
+              </CardContent>
             </Card>
 
             {(isLoading || isScanning) && (
               <div className="space-y-6 mt-8">
-                <Skeleton className="h-24 w-full" />
-                <div className="grid lg:grid-cols-5 gap-8">
-                    <div className="lg:col-span-2">
-                         <Skeleton className="h-48 w-full" />
+                <div className="grid md:grid-cols-3 gap-8">
+                    <div className="md:col-span-1">
+                          <Skeleton className="h-48 w-full" />
                     </div>
-                     <div className="lg:col-span-3 space-y-6">
+                      <div className="md:col-span-2 space-y-6">
                         <Skeleton className="h-32 w-full" />
                         <Skeleton className="h-32 w-full" />
                         <Skeleton className="h-32 w-full" />
-                     </div>
+                      </div>
                 </div>
               </div>
             )}
             
             {results && !isLoading && !isScanning && (
-                 <ResultDisplay 
+                  <ResultDisplay 
                     results={results}
                     speakingCardKey={speakingCardKey}
                     isSpeaking={isSpeaking}
                     handlePlayAudio={handlePlayAudio}
-                 />
+                  />
             )}
 
             {error && (
@@ -690,18 +686,19 @@ export default function Home() {
                     </p>
                 </div>
             )}
-           
-           {results && (
-             <div className="text-center mt-8">
-               <Button onClick={resetPage}>
-                 Start New Analysis
-               </Button>
-             </div>
-           )}
-
+            
+            {results && (
+              <div className="text-center mt-8">
+                <Button onClick={resetPage}>
+                  Start New Analysis
+                </Button>
+              </div>
+            )}
           </div>
         </main>
       </div>
     </>
   );
 }
+
+    

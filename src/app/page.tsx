@@ -105,7 +105,7 @@ const resultCardsConfig = [
     },
     {
       key: "recommendations",
-      title: "Recommendations",
+      title: "Suggestions",
       icon: HeartPulse,
       contentKey: "treatmentRecommendations",
       bgClass: "bg-green-50 dark:bg-green-900/20",
@@ -678,5 +678,7 @@ export default function Home() {
     </>
   );
 }
+
+    
 
     

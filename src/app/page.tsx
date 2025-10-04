@@ -555,12 +555,12 @@ export default function Home() {
                 </Sheet>
             </div>
           </div>
+          <div className="text-center animate-in fade-in-50 duration-500">
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                Your AI-powered assistant for rapid Arterial Blood Gas analysis.
+            </p>
+          </div>
         </header>
-        <div className="text-center animate-in fade-in-50 duration-500">
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Your AI-powered assistant for rapid Arterial Blood Gas analysis.
-          </p>
-        </div>
         <main className="container mx-auto px-4 py-8 md:py-12">
           <Sheet open={isHistoryOpen} onOpenChange={setIsHistoryOpen}>
             <SheetContent>

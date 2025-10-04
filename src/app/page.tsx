@@ -105,7 +105,7 @@ const resultCardsConfig = [
     },
     {
       key: "recommendations",
-      title: "Treatment Recommendations",
+      title: "Recommendations",
       icon: HeartPulse,
       contentKey: "treatmentRecommendations",
       bgClass: "bg-green-50 dark:bg-green-900/20",
@@ -242,6 +242,9 @@ export default function Home() {
       setHistory([]);
       resetPage();
     }
+    return () => {
+      window.speechSynthesis.cancel();
+    };
   }, [user, isUserLoading, resetPage, history.length]);
 
   const handleImageScan = async (imageDataUri: string) => {

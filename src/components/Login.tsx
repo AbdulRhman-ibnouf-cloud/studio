@@ -8,6 +8,8 @@ import {
   Mail,
   User as UserIcon,
   KeyRound,
+  Eye,
+  EyeOff,
 } from 'lucide-react';
 import {
   initiateAnonymousSignIn,
@@ -55,6 +57,7 @@ export function Login() {
   const [error, setError] = useState<string | null>(null);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleAuthAction = async (
     action: 'google' | 'anonymous' | 'email-signin' | 'email-signup'
@@ -106,9 +109,11 @@ export function Login() {
   
   const handleTabChange = (value: string) => {
     setError(null);
-    // Optionally reset email/password fields
-    // setEmail('');
-    // setPassword('');
+    setShowPassword(false);
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword((prev) => !prev);
   };
 
 
@@ -189,13 +194,27 @@ export function Login() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="password-signin">Password</Label>
-                <Input
-                  id="password-signin"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  disabled={!!loading}
-                />
+                <div className="relative">
+                  <Input
+                    id="password-signin"
+                    type={showPassword ? 'text' : 'password'}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    disabled={!!loading}
+                    className="pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={togglePasswordVisibility}
+                    className="absolute inset-y-0 right-0 flex items-center px-3 text-muted-foreground hover:text-foreground"
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-5 w-5" />
+                    ) : (
+                      <Eye className="h-5 w-5" />
+                    )}
+                  </button>
+                </div>
               </div>
               <Button
                 className="w-full"
@@ -259,13 +278,27 @@ export function Login() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="password-signup">Password</Label>
-                <Input
-                  id="password-signup"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  disabled={!!loading}
-                />
+                <div className="relative">
+                  <Input
+                    id="password-signup"
+                    type={showPassword ? 'text' : 'password'}
+                    value={password}
+                    onChange={(e) => setPassword(e.targt.value)}
+                    disabled={!!loading}
+                    className="pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={togglePasswordVisibility}
+                    className="absolute inset-y-0 right-0 flex items-center px-3 text-muted-foreground hover:text-foreground"
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-5 w-5" />
+                    ) : (
+                      <Eye className="h-5 w-5" />
+                    )}
+                  </button>
+                </div>
               </div>
               <Button
                 className="w-full"
@@ -289,3 +322,5 @@ export function Login() {
     </div>
   );
 }
+
+    

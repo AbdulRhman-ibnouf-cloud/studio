@@ -21,7 +21,7 @@ export function SplashScreen() {
       >
         <div className="inline-flex items-center gap-0">
           <Beaker className="h-16 w-16 text-primary" />
-          <h1 className="text-4xl md:text-5xl font-bold tracking-tight bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+          <h1 className="-ml-2 text-4xl md:text-5xl font-bold tracking-tight bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
             ABG AI Analyzer
           </h1>
         </div>

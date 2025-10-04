@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -24,6 +25,8 @@ import {
   Volume2,
   Pause,
   UserPlus,
+  Mail,
+  Star,
 } from "lucide-react";
 import { useAuth, useUser } from "@/firebase";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -63,6 +66,7 @@ import { AbgScanDialog } from "@/components/AbgScanDialog";
 import { extractAbgFromImage } from "@/ai/flows/extract-abg-from-image";
 import { ThemeToggleSwitch } from "@/components/ThemeToggleSwitch";
 import { useToast } from "@/hooks/use-toast";
+import { Separator } from "@/components/ui/separator";
 
 
 type AnalysisResult = Omit<AbgFormState, "error"> & {
@@ -411,7 +415,6 @@ export default function Home() {
     
     utterance.onerror = (event) => {
       if (event.error === 'interrupted') {
-        console.log('Speech synthesis interrupted as expected.');
         return;
       }
 
@@ -482,7 +485,7 @@ export default function Home() {
                     <SheetHeader>
                       <SheetTitle>Settings</SheetTitle>
                     </SheetHeader>
-                    <div className="py-4 space-y-6 flex flex-col items-center">
+                    <div className="py-4 flex flex-col h-full">
                       <div className="flex flex-col items-center gap-4">
                         <Avatar className="h-20 w-20">
                            <AvatarImage src={user.photoURL || undefined} alt={user.displayName || 'User'} />
@@ -495,11 +498,35 @@ export default function Home() {
                            </p>
                         </div>
                       </div>
-                      <ThemeToggleSwitch />
-                      <Button variant="destructive" onClick={handleSignOut} className="w-full">
-                        <LogOut className="mr-2 h-4 w-4" />
-                        Sign Out
-                      </Button>
+                      <div className="mt-6 flex-grow space-y-4">
+                        <ThemeToggleSwitch />
+                         <Separator />
+                        <div className="space-y-2 text-center">
+                            <p className="text-sm font-medium">Designed by</p>
+                            <p className="text-sm text-muted-foreground">Dr. AbdulRhman Ibn Ouf, Anaesthesiologist</p>
+                        </div>
+                        <div className="space-y-2">
+                             <a href="mailto:ibnouf9@gmail.com" className="w-full">
+                                <Button variant="outline" className="w-full">
+                                    <Mail className="mr-2 h-4 w-4" />
+                                    Contact Developer
+                                </Button>
+                            </a>
+                            <a href="#" target="_blank" rel="noopener noreferrer" className="w-full">
+                                <Button variant="outline" className="w-full">
+                                    <Star className="mr-2 h-4 w-4" />
+                                    Rate App
+                                </Button>
+                            </a>
+                        </div>
+                      </div>
+
+                      <div className="mt-auto">
+                        <Button variant="destructive" onClick={handleSignOut} className="w-full">
+                          <LogOut className="mr-2 h-4 w-4" />
+                          Sign Out
+                        </Button>
+                      </div>
                     </div>
                   </SheetContent>
                 </Sheet>
@@ -555,13 +582,11 @@ export default function Home() {
           </Sheet>
 
           <div className="max-w-5xl mx-auto space-y-8">
-            {!results && (
-              <header className="text-center mb-12 animate-in fade-in-50 duration-500">
-                  <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-                      Your AI-powered assistant for rapid Arterial Blood Gas analysis.
-                  </p>
-              </header>
-            )}
+            <header className="text-center mb-12 animate-in fade-in-50 duration-500">
+                <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
+                    Your AI-powered assistant for rapid Arterial Blood Gas analysis.
+                </p>
+            </header>
 
             <Card className="shadow-lg">
               <CardHeader>

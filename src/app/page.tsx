@@ -26,6 +26,7 @@ import {
   UserPlus,
   Mail,
   Star,
+  Bug,
 } from "lucide-react";
 import { useAuth, useUser } from "@/firebase";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -524,6 +525,12 @@ export default function Home() {
                                 <Button variant="outline" className="w-full">
                                     <Mail className="mr-2 h-4 w-4" />
                                     Contact Developer
+                                </Button>
+                            </a>
+                            <a href="mailto:x5ibnouf@gmail.com?subject=Bug%20Report:%20ABG%20AI%20Analyzer" className="w-full">
+                                <Button variant="outline" className="w-full">
+                                    <Bug className="mr-2 h-4 w-4" />
+                                    Report a Bug
                                 </Button>
                             </a>
                             <a href="#" target="_blank" rel="noopener noreferrer" className="w-full">

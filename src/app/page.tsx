@@ -133,61 +133,41 @@ const ResultDisplay = ({
   handlePlayAudio: (key: string, text: string) => void;
 }) => {
   return (
-    <div className="grid md:grid-cols-3 gap-8 animate-in fade-in-50 duration-500">
-      <div className="md:col-span-1">
-        <Card className="shadow-lg">
-          <CardHeader>
-            <CardTitle>Input Values</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {formFieldsConfig.map((field) => (
-              <div key={field.name} className="flex justify-between items-center text-sm">
-                <span className="flex items-center gap-2 text-muted-foreground">
-                  <field.icon className="h-4 w-4" />
-                  {field.label}
-                </span>
-                <span className="font-bold text-lg">{results.inputs[field.name]}</span>
+    <div className="animate-in fade-in-50 duration-500 max-w-2xl mx-auto space-y-6">
+      {resultCardsConfig.map((card, index) => {
+        const content = results[card.contentKey as keyof typeof results] as string | undefined;
+        return content ? (
+          <Card
+            key={card.key}
+            className={`shadow-lg ${card.bgClass}`}
+          >
+            <CardHeader className="flex flex-row items-start justify-between">
+              <div className="flex items-center gap-3">
+                  <div className={`p-2 rounded-full bg-white dark:bg-background ${card.iconClass}`}>
+                      <card.icon className="h-6 w-6" />
+                  </div>
+                  <CardTitle>{card.title}</CardTitle>
               </div>
-            ))}
-          </CardContent>
-        </Card>
-      </div>
-      <div className="md:col-span-2 space-y-6">
-        {resultCardsConfig.map((card, index) => {
-          const content = results[card.contentKey as keyof typeof results] as string | undefined;
-          return content ? (
-            <Card
-              key={card.key}
-              className={`shadow-lg ${card.bgClass}`}
-            >
-              <CardHeader className="flex flex-row items-start justify-between">
-                <div className="flex items-center gap-3">
-                    <div className={`p-2 rounded-full bg-white dark:bg-background ${card.iconClass}`}>
-                        <card.icon className="h-6 w-6" />
-                    </div>
-                    <CardTitle>{card.title}</CardTitle>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => handlePlayAudio(card.key, content!)}
-                  className="text-muted-foreground hover:text-foreground"
-                >
-                  {speakingCardKey === card.key && isSpeaking ? (
-                    <Pause className="h-5 w-5" />
-                  ) : (
-                    <Volume2 className="h-5 w-5" />
-                  )}
-                  <span className="sr-only">Read text</span>
-                </Button>
-              </CardHeader>
-              <CardContent>
-                <MarkdownContent content={content} />
-              </CardContent>
-            </Card>
-          ) : null;
-        })}
-      </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => handlePlayAudio(card.key, content!)}
+                className="text-muted-foreground hover:text-foreground"
+              >
+                {speakingCardKey === card.key && isSpeaking ? (
+                  <Pause className="h-5 w-5" />
+                ) : (
+                  <Volume2 className="h-5 w-5" />
+                )}
+                <span className="sr-only">Read text</span>
+              </Button>
+            </CardHeader>
+            <CardContent>
+              <MarkdownContent content={content} />
+            </CardContent>
+          </Card>
+        ) : null;
+      })}
     </div>
   );
 };
@@ -645,15 +625,10 @@ export default function Home() {
 
             {(isLoading || isScanning) && (
               <div className="space-y-6 mt-8">
-                <div className="grid md:grid-cols-3 gap-8">
-                    <div className="md:col-span-1">
-                          <Skeleton className="h-48 w-full" />
-                    </div>
-                      <div className="md:col-span-2 space-y-6">
-                        <Skeleton className="h-32 w-full" />
-                        <Skeleton className="h-32 w-full" />
-                        <Skeleton className="h-32 w-full" />
-                      </div>
+                <div className="space-y-6 max-w-2xl mx-auto">
+                    <Skeleton className="h-32 w-full" />
+                    <Skeleton className="h-32 w-full" />
+                    <Skeleton className="h-32 w-full" />
                 </div>
               </div>
             )}

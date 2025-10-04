@@ -112,6 +112,11 @@ export default function Home() {
     };
     window.speechSynthesis.onvoiceschanged = loadVoices;
     loadVoices();
+    
+    // Cleanup function to cancel speech on component unmount
+    return () => {
+      window.speechSynthesis.cancel();
+    };
   }, []);
 
   const defaultFormValues = {
@@ -189,12 +194,12 @@ export default function Home() {
   }
 
   async function onSubmit(values: z.infer<typeof AbgFormSchema>) {
+    window.speechSynthesis.cancel();
     setIsLoading(true);
     setResults(null);
     setError(null);
     setIsSpeaking(false);
     setSpeakingCardKey(null);
-    window.speechSynthesis.cancel();
   
     const localResult = localAbgAnalysis(values);
   
@@ -376,6 +381,7 @@ export default function Home() {
   ] as const;
   
   const displayResults = (result: AnalysisResult) => {
+    window.speechSynthesis.cancel();
     setResults(result);
     form.reset(result.inputs);
     setIsHistoryOpen(false);

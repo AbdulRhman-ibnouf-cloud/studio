@@ -475,14 +475,15 @@ export default function Home() {
         onScan={handleImageScan}
       />
       <div className="min-h-screen w-full">
-        <header className="container mx-auto px-4 py-4 flex justify-between items-center">
+        <header className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
             <div className="inline-flex items-center gap-0">
               <Beaker className="h-8 w-8 text-primary" />
               <h1 className="-ml-1 text-2xl font-bold tracking-tight bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
                 ABG AI Analyzer
               </h1>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-0">
                 <Button variant="ghost" size="icon" onClick={() => setIsHistoryOpen(true)}>
                   <History className="h-5 w-5" />
                   <span className="sr-only">View History</span>
@@ -553,6 +554,7 @@ export default function Home() {
                   </SheetContent>
                 </Sheet>
             </div>
+          </div>
         </header>
         <div className="text-center animate-in fade-in-50 duration-500">
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
@@ -738,7 +740,3 @@ export default function Home() {
     </>
   );
 }
-
-    
-
-    

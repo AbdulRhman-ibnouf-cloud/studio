@@ -568,92 +568,83 @@ export default function Home() {
 
 
           <div className="max-w-4xl mx-auto">
-            {results && !isLoading && !isScanning ? (
-                 <ResultDisplay 
-                    results={results}
-                    speakingCardKey={speakingCardKey}
-                    isSpeaking={isSpeaking}
-                    handlePlayAudio={handlePlayAudio}
-                 />
-            ) : (
-                <Card className="shadow-lg">
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2 text-xl">
-                        <FileText className="text-primary" />
-                        Patient ABG Values
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <Form {...form}>
-                        <form
-                            onSubmit={form.handleSubmit(onSubmit)}
-                            className="space-y-6"
-                        >
-                            {formFieldsConfig.map((field) => (
-                            <FormField
-                                key={field.name}
-                                control={form.control}
-                                name={field.name}
-                                render={({ field: { value, onChange } }) => (
-                                <FormItem>
-                                    <div className="flex justify-between items-baseline mb-2">
-                                    <FormLabel className="flex items-center gap-2 font-medium">
-                                        <field.icon className="w-5 h-5 text-muted-foreground" />
-                                        {field.label}
-                                    </FormLabel>
-                                    <span className="text-lg font-bold text-primary w-24 text-right">
-                                        {value}
-                                    </span>
-                                    </div>
-                                    <FormControl>
-                                    <Slider
-                                        value={[value]}
-                                        onValueChange={(vals) => onChange(vals[0])}
-                                        min={field.min}
-                                        max={field.max}
-                                        step={field.step}
-                                        disabled={isLoading || isScanning}
-                                        className="[&>span:first-child]:h-2 [&>span:last-child]:h-5 [&>span:last-child]:w-5"
-                                    />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                                )}
-                            />
-                            ))}
-                            
-                            <div className="flex flex-col sm:flex-row gap-2">
-                                <Button
-                                type="button"
-                                variant="outline"
-                                className="w-full font-semibold"
-                                onClick={() => setIsScanDialogOpen(true)}
-                                disabled={isLoading || isScanning}
-                                >
-                                <Camera className="mr-2 h-4 w-4" />
-                                Scan ABG Report
-                                </Button>
-                                <Button
-                                type="submit"
-                                className="w-full font-semibold"
-                                disabled={isLoading || isScanning || !user}
-                                size="lg"
-                                >
-                                {isLoading || isScanning ? (
-                                    <>
-                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                    {isScanning ? "Scanning..." : "Analyzing..."}
-                                    </>
-                                ) : (
-                                    "Analyze Now"
-                                )}
-                                </Button>
-                            </div>
-                        </form>
-                        </Form>
-                    </CardContent>
-                </Card>
-            )}
+             <Card className="shadow-lg mb-8">
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-xl">
+                    <FileText className="text-primary" />
+                    Patient ABG Values
+                    </CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <Form {...form}>
+                    <form
+                        onSubmit={form.handleSubmit(onSubmit)}
+                        className="space-y-6"
+                    >
+                        {formFieldsConfig.map((field) => (
+                        <FormField
+                            key={field.name}
+                            control={form.control}
+                            name={field.name}
+                            render={({ field: { value, onChange } }) => (
+                            <FormItem>
+                                <div className="flex justify-between items-baseline mb-2">
+                                <FormLabel className="flex items-center gap-2 font-medium">
+                                    <field.icon className="w-5 h-5 text-muted-foreground" />
+                                    {field.label}
+                                </FormLabel>
+                                <span className="text-lg font-bold text-primary w-24 text-right">
+                                    {value}
+                                </span>
+                                </div>
+                                <FormControl>
+                                <Slider
+                                    value={[value]}
+                                    onValueChange={(vals) => onChange(vals[0])}
+                                    min={field.min}
+                                    max={field.max}
+                                    step={field.step}
+                                    disabled={isLoading || isScanning}
+                                    className="[&>span:first-child]:h-2 [&>span:last-child]:h-5 [&>span:last-child]:w-5"
+                                />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                            )}
+                        />
+                        ))}
+                        
+                        <div className="flex flex-col sm:flex-row gap-2">
+                            <Button
+                            type="button"
+                            variant="outline"
+                            className="w-full font-semibold"
+                            onClick={() => setIsScanDialogOpen(true)}
+                            disabled={isLoading || isScanning}
+                            >
+                            <Camera className="mr-2 h-4 w-4" />
+                            Scan ABG Report
+                            </Button>
+                            <Button
+                            type="submit"
+                            className="w-full font-semibold"
+                            disabled={isLoading || isScanning || !user}
+                            size="lg"
+                            >
+                            {isLoading || isScanning ? (
+                                <>
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                {isScanning ? "Scanning..." : "Analyzing..."}
+                                </>
+                            ) : (
+                                "Analyze Now"
+                            )}
+                            </Button>
+                        </div>
+                    </form>
+                    </Form>
+                </CardContent>
+            </Card>
 
             {(isLoading || isScanning) && (
               <div className="space-y-6 mt-8">
@@ -669,6 +660,15 @@ export default function Home() {
                      </div>
                 </div>
               </div>
+            )}
+            
+            {results && !isLoading && !isScanning && (
+                 <ResultDisplay 
+                    results={results}
+                    speakingCardKey={speakingCardKey}
+                    isSpeaking={isSpeaking}
+                    handlePlayAudio={handlePlayAudio}
+                 />
             )}
 
             {error && (
@@ -705,5 +705,3 @@ export default function Home() {
     </>
   );
 }
-
-    

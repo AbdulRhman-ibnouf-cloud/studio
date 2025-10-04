@@ -6,7 +6,7 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import { FirebaseClientProvider } from "@/firebase/client-provider";
 
 export const metadata: Metadata = {
-  title: "ABG AI Analyzer",
+  title: "ABG AI Analyser",
   description: "An AI-powered Arterial Blood Gas (ABG) analysis tool.",
 };
 

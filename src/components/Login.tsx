@@ -283,7 +283,7 @@ export function Login() {
                     id="password-signup"
                     type={showPassword ? 'text' : 'password'}
                     value={password}
-                    onChange={(e) => setPassword(e.targt.value)}
+                    onChange={(e) => setPassword(e.target.value)}
                     disabled={!!loading}
                     className="pr-10"
                   />
@@ -322,5 +322,3 @@ export function Login() {
     </div>
   );
 }
-
-    

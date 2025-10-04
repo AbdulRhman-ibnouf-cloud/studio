@@ -1,15 +1,15 @@
-
 'use client';
 import {
-  Auth, // Import Auth type for type hinting
+  Auth, 
   signInAnonymously,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signInWithPopup,
   GoogleAuthProvider,
-  // Assume getAuth and app are initialized elsewhere
+  sendPasswordResetEmail,
 } from 'firebase/auth';
 
+type AuthCallback = () => void;
 type ErrorCallback = (error: any) => void;
 
 /** Initiate anonymous sign-in (non-blocking). */
@@ -31,4 +31,9 @@ export function initiateEmailSignIn(authInstance: Auth, email: string, password:
 export function initiateGoogleSignIn(authInstance: Auth, onError: ErrorCallback): void {
   const provider = new GoogleAuthProvider();
   signInWithPopup(authInstance, provider).catch(onError);
+}
+
+/** Sends a password reset email (non-blocking). */
+export function sendPasswordReset(authInstance: Auth, email: string, onSuccess: AuthCallback, onError: ErrorCallback): void {
+    sendPasswordResetEmail(authInstance, email).then(onSuccess).catch(onError);
 }

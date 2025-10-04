@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -7,7 +6,6 @@ import {
   Loader2,
   Mail,
   User as UserIcon,
-  KeyRound,
   Eye,
   EyeOff,
 } from 'lucide-react';
@@ -16,7 +14,8 @@ import {
   initiateGoogleSignIn,
   initiateEmailSignIn,
   initiateEmailSignUp,
-} from '@/firebase/non-blocking-login';
+  sendPasswordReset,
+} from '@/firebase/auth-actions';
 import { useAuth } from '@/firebase';
 import { Button } from '@/components/ui/button';
 import {
@@ -34,10 +33,11 @@ import {
 } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
 import { ThemeToggleSwitch } from './ThemeToggleSwitch';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { TriangleAlert } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+
 
 function GoogleIcon() {
   return (
@@ -58,12 +58,15 @@ export function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const { toast } = useToast();
 
   const handleAuthAction = async (
     action: 'google' | 'anonymous' | 'email-signin' | 'email-signup'
   ) => {
     setLoading(action);
     setError(null);
+    setShowForgotPassword(false);
     
     if (action === 'email-signin' || action === 'email-signup') {
       if (!email && !password) {
@@ -87,8 +90,11 @@ export function Login() {
       let message = 'An unexpected error occurred. Please try again.';
       if (e.code === 'auth/weak-password') {
         message = 'Password should be at least 6 characters.';
-      } else if (e.code === 'auth/invalid-credential' || e.code === 'auth/wrong-password' || e.code === 'auth/user-not-found') {
+      } else if (e.code === 'auth/invalid-credential' || e.code === 'auth/wrong-password') {
         message = 'Invalid credentials. Please check your email and password and try again.';
+        setShowForgotPassword(true);
+      } else if (e.code === 'auth/user-not-found') {
+        message = 'No account found with this email address.';
       } else if (e.code === 'auth/email-already-in-use') {
         message = 'This email address is already in use by another account.';
       }
@@ -106,10 +112,39 @@ export function Login() {
       initiateEmailSignUp(auth, email, password, onError);
     }
   };
+
+  const handlePasswordReset = async () => {
+    if (!email) {
+      setError("Please enter your email address to reset your password.");
+      return;
+    }
+    setLoading('reset-password');
+    setError(null);
+
+    const onSuccess = () => {
+        toast({
+            title: "Password Reset Email Sent",
+            description: `An email has been sent to ${email} with instructions to reset your password.`,
+        });
+        setLoading(null);
+    };
+
+    const onError = (e: any) => {
+        let message = "Failed to send password reset email. Please try again.";
+        if(e.code === 'auth/user-not-found') {
+            message = "No account found with this email address."
+        }
+        setError(message);
+        setLoading(null);
+    }
+
+    sendPasswordReset(auth, email, onSuccess, onError);
+  };
   
   const handleTabChange = (value: string) => {
     setError(null);
     setShowPassword(false);
+    setShowForgotPassword(false);
   };
 
   const togglePasswordVisibility = () => {
@@ -193,7 +228,24 @@ export function Login() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="password-signin">Password</Label>
+                 <div className="flex items-center justify-between">
+                    <Label htmlFor="password-signin">Password</Label>
+                    {showForgotPassword && (
+                         <Button
+                            variant="link"
+                            className="p-0 h-auto text-sm"
+                            onClick={handlePasswordReset}
+                            disabled={loading === 'reset-password'}
+                        >
+                            {loading === 'reset-password' ? (
+                                <>
+                                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                 Sending...
+                                </>
+                            ) : "Forgot Password?"}
+                         </Button>
+                    )}
+                </div>
                 <div className="relative">
                   <Input
                     id="password-signin"
@@ -207,6 +259,7 @@ export function Login() {
                     type="button"
                     onClick={togglePasswordVisibility}
                     className="absolute inset-y-0 right-0 flex items-center px-3 text-muted-foreground hover:text-foreground"
+                    tabIndex={-1}
                   >
                     {showPassword ? (
                       <EyeOff className="h-5 w-5" />
@@ -291,6 +344,7 @@ export function Login() {
                     type="button"
                     onClick={togglePasswordVisibility}
                     className="absolute inset-y-0 right-0 flex items-center px-3 text-muted-foreground hover:text-foreground"
+                    tabIndex={-1}
                   >
                     {showPassword ? (
                       <EyeOff className="h-5 w-5" />

@@ -320,6 +320,12 @@ export default function Home() {
     };
     
     utterance.onerror = (event) => {
+      if (event.error === 'interrupted') {
+        // This is expected when we cancel speech, so we don't show an error.
+        console.log('Speech synthesis interrupted as expected.');
+        return;
+      }
+
       console.error('SpeechSynthesis Error:', event.error);
       toast({
         variant: "destructive",

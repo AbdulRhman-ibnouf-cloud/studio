@@ -158,7 +158,7 @@ export function Login() {
         <div className="inline-flex items-center gap-3">
           <Beaker className="h-10 w-10 text-primary" />
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-            ABG Insights
+            ABG Analyzer
           </h1>
         </div>
         <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">

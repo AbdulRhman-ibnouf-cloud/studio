@@ -137,41 +137,43 @@ const ResultDisplay = ({
   handlePlayAudio: (key: string, text: string) => void;
 }) => {
   return (
-    <div className="animate-in fade-in-50 duration-500 max-w-2xl mx-auto space-y-6">
-      {resultCardsConfig.map((card) => {
-        const content = results[card.contentKey as keyof typeof results] as string | undefined;
-        return content ? (
-          <Card
-            key={card.key}
-            className={`shadow-lg ${card.bgClass}`}
-          >
-            <CardHeader className="flex flex-row items-start justify-between">
-              <div className="flex items-center gap-3">
-                  <div className={`p-2 rounded-full bg-white dark:bg-background ${card.iconClass}`}>
-                      <card.icon className="h-6 w-6" />
-                  </div>
-                  <CardTitle>{card.title}</CardTitle>
-              </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => handlePlayAudio(card.key, content!)}
-                className="text-muted-foreground hover:text-foreground"
+    <div className="animate-in fade-in-50 duration-500 mx-auto space-y-6">
+      <div className="space-y-6">
+          {resultCardsConfig.map((card) => {
+            const content = results[card.contentKey as keyof typeof results] as string | undefined;
+            return content ? (
+              <Card
+                key={card.key}
+                className={`shadow-lg ${card.bgClass}`}
               >
-                {speakingCardKey === card.key && isSpeaking ? (
-                  <Pause className="h-5 w-5" />
-                ) : (
-                  <Volume2 className="h-5 w-5" />
-                )}
-                <span className="sr-only">Read text</span>
-              </Button>
-            </CardHeader>
-            <CardContent>
-              <MarkdownContent content={content} />
-            </CardContent>
-          </Card>
-        ) : null;
-      })}
+                <CardHeader className="flex flex-row items-start justify-between">
+                  <div className="flex items-center gap-3">
+                      <div className={`p-2 rounded-full bg-white dark:bg-background ${card.iconClass}`}>
+                          <card.icon className="h-6 w-6" />
+                      </div>
+                      <CardTitle>{card.title}</CardTitle>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => handlePlayAudio(card.key, content!)}
+                    className="text-muted-foreground hover:text-foreground"
+                  >
+                    {speakingCardKey === card.key && isSpeaking ? (
+                      <Pause className="h-5 w-5" />
+                    ) : (
+                      <Volume2 className="h-5 w-5" />
+                    )}
+                    <span className="sr-only">Read text</span>
+                  </Button>
+                </CardHeader>
+                <CardContent>
+                  <MarkdownContent content={content} />
+                </CardContent>
+              </Card>
+            ) : null;
+          })}
+        </div>
     </div>
   );
 };
@@ -462,7 +464,7 @@ export default function Home() {
             <div className="inline-flex items-center gap-3">
               <Beaker className="h-8 w-8 text-primary" />
               <h1 className="text-2xl font-bold tracking-tight bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                ABG Insights
+                ABG Analyzer
               </h1>
             </div>
             <div className="flex items-center gap-2">

@@ -86,6 +86,113 @@ function MarkdownContent({ content }: { content: string | undefined }) {
   return <p className="whitespace-pre-wrap text-foreground/90">{content}</p>;
 }
 
+const resultCardsConfig = [
+    {
+      key: "analysis",
+      title: "Automated Analysis",
+      icon: Stethoscope,
+      contentKey: "interpretation",
+      bgClass: "bg-blue-50 dark:bg-blue-900/20",
+      iconClass: "text-blue-500",
+    },
+    {
+      key: "suggestions",
+      title: "Diagnostic Suggestions",
+      icon: BrainCircuit,
+      contentKey: "possibleConditions",
+      bgClass: "bg-purple-50 dark:bg-purple-900/20",
+      iconClass: "text-purple-500",
+    },
+    {
+      key: "recommendations",
+      title: "Treatment Recommendations",
+      icon: HeartPulse,
+      contentKey: "treatmentRecommendations",
+      bgClass: "bg-green-50 dark:bg-green-900/20",
+      iconClass: "text-green-500",
+    },
+] as const;
+
+const formFieldsConfig = [
+    { name: "pH", label: "pH", icon: FlaskConical, min: 6.8, max: 7.8, step: 0.01 },
+    { name: "pCO2", label: "pCO₂ (mmHg)", icon: Wind, min: 10, max: 150, step: 1 },
+    { name: "HCO3", label: "HCO₃⁻ (mEq/L)", icon: Droplets, min: 5, max: 60, step: 1 },
+    { name: "PaO2", label: "PaO₂ (mmHg)", icon: Wind, min: 20, max: 500, step: 1 },
+    { name: "BE", label: "Base Excess (mEq/L)", icon: Baseline, min: -30, max: 30, step: 1 },
+] as const;
+
+const ResultDisplay = ({
+  results,
+  speakingCardKey,
+  isSpeaking,
+  handlePlayAudio,
+}: {
+  results: AnalysisResult;
+  speakingCardKey: string | null;
+  isSpeaking: boolean;
+  handlePlayAudio: (key: string, text: string) => void;
+}) => {
+  return (
+    <div className="grid lg:grid-cols-5 gap-8 animate-in fade-in-50 duration-500">
+      <div className="lg:col-span-2">
+        <Card className="shadow-lg">
+          <CardHeader>
+            <CardTitle>Input Values</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {formFieldsConfig.map((field) => (
+              <div key={field.name} className="flex justify-between items-center text-sm">
+                <span className="flex items-center gap-2 text-muted-foreground">
+                  <field.icon className="h-4 w-4" />
+                  {field.label}
+                </span>
+                <span className="font-bold text-lg">{results.inputs[field.name]}</span>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      </div>
+      <div className="lg:col-span-3 space-y-6">
+        {resultCardsConfig.map((card, index) => {
+          const content = results[card.contentKey as keyof typeof results] as string | undefined;
+          return content ? (
+            <Card
+              key={card.key}
+              className={`shadow-lg ${card.bgClass}`}
+            >
+              <CardHeader className="flex flex-row items-start justify-between">
+                <div className="flex items-center gap-3">
+                    <div className={`p-2 rounded-full bg-white dark:bg-background ${card.iconClass}`}>
+                        <card.icon className="h-6 w-6" />
+                    </div>
+                    <CardTitle>{card.title}</CardTitle>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => handlePlayAudio(card.key, content!)}
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  {speakingCardKey === card.key && isSpeaking ? (
+                    <Pause className="h-5 w-5" />
+                  ) : (
+                    <Volume2 className="h-5 w-5" />
+                  )}
+                  <span className="sr-only">Read text</span>
+                </Button>
+              </CardHeader>
+              <CardContent>
+                <MarkdownContent content={content} />
+              </CardContent>
+            </Card>
+          ) : null;
+        })}
+      </div>
+    </div>
+  );
+};
+
+
 export default function Home() {
   const { user, isUserLoading } = useUser();
   const auth = useAuth();
@@ -351,40 +458,6 @@ export default function Home() {
     return <Login />;
   }
 
-  const resultCards = [
-    {
-      key: "analysis",
-      title: "Automated Analysis",
-      icon: Stethoscope,
-      content: results?.interpretation,
-      bgClass: "bg-blue-50 dark:bg-blue-900/20",
-      iconClass: "text-blue-500",
-    },
-    {
-      key: "suggestions",
-      title: "Diagnostic Suggestions",
-      icon: BrainCircuit,
-      content: results?.possibleConditions,
-      bgClass: "bg-purple-50 dark:bg-purple-900/20",
-      iconClass: "text-purple-500",
-    },
-    {
-      key: "recommendations",
-      title: "Treatment Recommendations",
-      icon: HeartPulse,
-      content: results?.treatmentRecommendations,
-      bgClass: "bg-green-50 dark:bg-green-900/20",
-      iconClass: "text-green-500",
-    },
-  ];
-
-  const formFields = [
-    { name: "pH", label: "pH", icon: FlaskConical, min: 6.8, max: 7.8, step: 0.01 },
-    { name: "pCO2", label: "pCO₂ (mmHg)", icon: Wind, min: 10, max: 150, step: 1 },
-    { name: "HCO3", label: "HCO₃⁻ (mEq/L)", icon: Droplets, min: 5, max: 60, step: 1 },
-    { name: "PaO2", label: "PaO₂ (mmHg)", icon: Wind, min: 20, max: 500, step: 1 },
-    { name: "BE", label: "Base Excess (mEq/L)", icon: Baseline, min: -30, max: 30, step: 1 },
-  ] as const;
   
   const displayResults = (result: AnalysisResult) => {
     window.speechSynthesis.cancel();
@@ -485,170 +558,152 @@ export default function Home() {
             </SheetContent>
           </Sheet>
 
-          <header className="text-center mb-12">
-            <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-              Your AI-powered assistant for rapid Arterial Blood Gas analysis.
-            </p>
-          </header>
+          {!results && (
+            <header className="text-center mb-12 animate-in fade-in-50 duration-500">
+                <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
+                    Your AI-powered assistant for rapid Arterial Blood Gas analysis.
+                </p>
+            </header>
+          )}
 
-          <div className="grid md:grid-cols-5 gap-8 items-start">
-            <div className="md:col-span-2">
-              <Card className="shadow-lg">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-xl">
-                    <FileText className="text-primary" />
-                    Patient ABG Values
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Form {...form}>
-                    <form
-                      onSubmit={form.handleSubmit(onSubmit)}
-                      className="space-y-6"
-                    >
-                      {formFields.map((field) => (
-                        <FormField
-                          key={field.name}
-                          control={form.control}
-                          name={field.name}
-                          render={({ field: { value, onChange } }) => (
-                            <FormItem>
-                              <div className="flex justify-between items-baseline mb-2">
-                                <FormLabel className="flex items-center gap-2 font-medium">
-                                  <field.icon className="w-5 h-5 text-muted-foreground" />
-                                  {field.label}
-                                </FormLabel>
-                                <span className="text-lg font-bold text-primary w-24 text-right">
-                                  {value}
-                                </span>
-                              </div>
-                              <FormControl>
-                                <Slider
-                                  value={[value]}
-                                  onValueChange={(vals) => onChange(vals[0])}
-                                  min={field.min}
-                                  max={field.max}
-                                  step={field.step}
-                                  disabled={isLoading || isScanning}
-                                  className="[&>span:first-child]:h-2 [&>span:last-child]:h-5 [&>span:last-child]:w-5"
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      ))}
-                      
-                      <div className="flex flex-col sm:flex-row gap-2">
-                         <Button
-                          type="button"
-                          variant="outline"
-                          className="w-full font-semibold"
-                          onClick={() => setIsScanDialogOpen(true)}
-                          disabled={isLoading || isScanning}
+
+          <div className="max-w-4xl mx-auto">
+            {results && !isLoading && !isScanning ? (
+                 <ResultDisplay 
+                    results={results}
+                    speakingCardKey={speakingCardKey}
+                    isSpeaking={isSpeaking}
+                    handlePlayAudio={handlePlayAudio}
+                 />
+            ) : (
+                <Card className="shadow-lg">
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2 text-xl">
+                        <FileText className="text-primary" />
+                        Patient ABG Values
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <Form {...form}>
+                        <form
+                            onSubmit={form.handleSubmit(onSubmit)}
+                            className="space-y-6"
                         >
-                          <Camera className="mr-2 h-4 w-4" />
-                          Scan ABG Report
-                        </Button>
-                        <Button
-                          type="submit"
-                          className="w-full font-semibold"
-                          disabled={isLoading || isScanning || !user}
-                          size="lg"
-                        >
-                          {isLoading || isScanning ? (
-                            <>
-                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                              {isScanning ? "Scanning..." : "Analyzing..."}
-                            </>
-                          ) : (
-                            "Analyze Now"
-                          )}
-                        </Button>
-                      </div>
-                    </form>
-                  </Form>
-                </CardContent>
-              </Card>
-            </div>
-
-            <div className="md:col-span-3">
-              <div className="space-y-6">
-                {(isLoading || isScanning) && (
-                  <>
-                    <Skeleton className="h-48 w-full" />
-                    <Skeleton className="h-48 w-full" />
-                    <Skeleton className="h-48 w-full" />
-                  </>
-                )}
-
-                {error && (
-                  <Alert variant="destructive">
-                    <TriangleAlert className="h-4 w-4" />
-                    <AlertTitle>Analysis Error</AlertTitle>
-                    <AlertDescription>{error}</AlertDescription>
-                  </Alert>
-                )}
-
-                {!isLoading && !isScanning && !results && !error && (
-                   <Card className="flex flex-col items-center justify-center text-center p-8 h-full min-h-[50vh] shadow-none border-dashed">
-                     <Beaker className="h-24 w-24 text-primary/50 mb-8" />
-                     <h3 className="text-xl font-semibold text-foreground">
-                       Awaiting Analysis
-                     </h3>
-                     <p className="text-muted-foreground mt-2 max-w-sm">
-                       Your patient&apos;s results will appear here once the analysis
-                       is complete.
-                     </p>
-                   </Card>
-                )}
-
-                {results && (
-                  <div className="space-y-6">
-                    {resultCards.map(
-                      (card, index) =>
-                        card.content && (
-                          <Card
-                            key={card.key}
-                            className={`shadow-lg animate-in fade-in-50 slide-in-from-bottom-5 duration-500 ${card.bgClass}`}
-                            style={{ animationDelay: `${index * 150}ms` }}
-                          >
-                            <CardHeader className="flex flex-row items-center justify-between">
-                              <CardTitle className="flex items-center gap-3">
-                                <div
-                                  className={`p-2 rounded-full bg-white dark:bg-background ${card.iconClass}`}
-                                >
-                                  <card.icon className="h-6 w-6" />
-                                </div>
-                                {card.title}
-                              </CardTitle>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => handlePlayAudio(card.key, card.content!)}
-                                className="text-muted-foreground hover:text-foreground"
-                              >
-                                {speakingCardKey === card.key && isSpeaking ? (
-                                  <Pause className="h-5 w-5" />
-                                ) : (
-                                  <Volume2 className="h-5 w-5" />
+                            {formFieldsConfig.map((field) => (
+                            <FormField
+                                key={field.name}
+                                control={form.control}
+                                name={field.name}
+                                render={({ field: { value, onChange } }) => (
+                                <FormItem>
+                                    <div className="flex justify-between items-baseline mb-2">
+                                    <FormLabel className="flex items-center gap-2 font-medium">
+                                        <field.icon className="w-5 h-5 text-muted-foreground" />
+                                        {field.label}
+                                    </FormLabel>
+                                    <span className="text-lg font-bold text-primary w-24 text-right">
+                                        {value}
+                                    </span>
+                                    </div>
+                                    <FormControl>
+                                    <Slider
+                                        value={[value]}
+                                        onValueChange={(vals) => onChange(vals[0])}
+                                        min={field.min}
+                                        max={field.max}
+                                        step={field.step}
+                                        disabled={isLoading || isScanning}
+                                        className="[&>span:first-child]:h-2 [&>span:last-child]:h-5 [&>span:last-child]:w-5"
+                                    />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
                                 )}
-                                <span className="sr-only">Read text</span>
-                              </Button>
-                            </CardHeader>
-                            <CardContent>
-                               <MarkdownContent content={card.content} />
-                            </CardContent>
-                          </Card>
-                        )
-                    )}
-                  </div>
-                )}
+                            />
+                            ))}
+                            
+                            <div className="flex flex-col sm:flex-row gap-2">
+                                <Button
+                                type="button"
+                                variant="outline"
+                                className="w-full font-semibold"
+                                onClick={() => setIsScanDialogOpen(true)}
+                                disabled={isLoading || isScanning}
+                                >
+                                <Camera className="mr-2 h-4 w-4" />
+                                Scan ABG Report
+                                </Button>
+                                <Button
+                                type="submit"
+                                className="w-full font-semibold"
+                                disabled={isLoading || isScanning || !user}
+                                size="lg"
+                                >
+                                {isLoading || isScanning ? (
+                                    <>
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    {isScanning ? "Scanning..." : "Analyzing..."}
+                                    </>
+                                ) : (
+                                    "Analyze Now"
+                                )}
+                                </Button>
+                            </div>
+                        </form>
+                        </Form>
+                    </CardContent>
+                </Card>
+            )}
+
+            {(isLoading || isScanning) && (
+              <div className="space-y-6 mt-8">
+                <Skeleton className="h-24 w-full" />
+                <div className="grid lg:grid-cols-5 gap-8">
+                    <div className="lg:col-span-2">
+                         <Skeleton className="h-48 w-full" />
+                    </div>
+                     <div className="lg:col-span-3 space-y-6">
+                        <Skeleton className="h-32 w-full" />
+                        <Skeleton className="h-32 w-full" />
+                        <Skeleton className="h-32 w-full" />
+                     </div>
+                </div>
               </div>
-            </div>
+            )}
+
+            {error && (
+              <Alert variant="destructive" className="mt-8">
+                <TriangleAlert className="h-4 w-4" />
+                <AlertTitle>Analysis Error</AlertTitle>
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+
+            {!isLoading && !isScanning && !results && !error && (
+                <div className="text-center mt-16 text-muted-foreground">
+                    <Beaker className="h-24 w-24 text-primary/20 mx-auto mb-8" />
+                    <h3 className="text-xl font-semibold text-foreground/80">
+                        Awaiting Analysis
+                    </h3>
+                    <p className="mt-2 max-w-sm mx-auto">
+                        Enter patient values above or scan a report to begin.
+                    </p>
+                </div>
+            )}
+           
+           {results && (
+             <div className="text-center mt-8">
+               <Button onClick={resetPage}>
+                 Start New Analysis
+               </Button>
+             </div>
+           )}
+
           </div>
         </main>
       </div>
     </>
   );
 }
+
+    

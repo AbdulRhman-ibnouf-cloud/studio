@@ -19,7 +19,7 @@ export function SplashScreen() {
         transition={{ delay: 0.2, duration: 0.5, ease: 'easeOut' }}
         className="text-center"
       >
-        <div className="inline-flex items-center gap-4">
+        <div className="inline-flex items-center gap-3">
           <Beaker className="h-16 w-16 text-primary" />
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
             ABG AI Analyzer

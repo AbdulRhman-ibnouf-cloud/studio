@@ -1,3 +1,4 @@
+
 import type { Metadata } from "next";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
@@ -5,7 +6,7 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import { FirebaseClientProvider } from "@/firebase/client-provider";
 
 export const metadata: Metadata = {
-  title: "ABG Analyzer",
+  title: "ABG AI Analyzer",
   description: "An AI-powered Arterial Blood Gas (ABG) analysis tool.",
 };
 

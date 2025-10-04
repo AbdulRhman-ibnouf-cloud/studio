@@ -553,7 +553,11 @@ export default function Home() {
                 </Sheet>
             </div>
         </header>
-
+        <div className="text-center animate-in fade-in-50 duration-500">
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Your AI-powered assistant for rapid Arterial Blood Gas analysis.
+          </p>
+        </div>
         <main className="container mx-auto px-4 py-8 md:py-12">
           <Sheet open={isHistoryOpen} onOpenChange={setIsHistoryOpen}>
             <SheetContent>
@@ -603,12 +607,6 @@ export default function Home() {
           </Sheet>
 
           <div className="max-w-5xl mx-auto space-y-8">
-            <header className="text-center mb-12 animate-in fade-in-50 duration-500">
-                <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-                    Your AI-powered assistant for rapid Arterial Blood Gas analysis.
-                </p>
-            </header>
-
             <Card className="shadow-lg">
               <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-xl">
@@ -739,3 +737,5 @@ export default function Home() {
     </>
   );
 }
+
+    

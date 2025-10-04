@@ -8,7 +8,7 @@
  */
 
 import { ai } from '@/ai/genkit';
-import { z } from 'genkit';
+import { z } from 'zod';
 import wav from 'wav';
 import { googleAI } from '@genkit-ai/google-genai';
 
@@ -64,7 +64,7 @@ const textToSpeechFlow = ai.defineFlow(
         responseModalities: ['AUDIO'],
         speechConfig: {
           voiceConfig: {
-            prebuiltVoiceConfig: { voiceName: 'Alloy' }, // Male, mid-to-deep tone
+            prebuiltVoiceConfig: { voiceName: 'Algenib' }, // Male voice
           },
         },
       },

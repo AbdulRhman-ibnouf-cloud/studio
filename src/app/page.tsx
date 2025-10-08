@@ -476,90 +476,89 @@ export default function Home() {
       />
       <div className="min-h-screen w-full">
         <header className="container mx-auto px-4 py-4">
-            <div className="flex items-center justify-between">
-                <div>
-                    <div className="inline-flex items-center gap-0">
-                        <Beaker className="h-8 w-8 text-primary" />
-                        <h1 className="-ml-1 text-2xl font-bold tracking-tight bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                            ABG AI Analyzer
-                        </h1>
-                    </div>
-                </div>
-                <div className="flex items-center gap-1">
-                    <Button variant="ghost" size="icon" onClick={() => setIsHistoryOpen(true)}>
-                        <History className="h-5 w-5" />
-                        <span className="sr-only">View History</span>
-                    </Button>
-                    <Sheet>
-                        <SheetTrigger asChild>
-                            <Button variant="ghost" size="icon">
-                                <Settings className="h-5 w-5" />
-                                <span className="sr-only">Open Settings</span>
-                            </Button>
-                        </SheetTrigger>
-                        <SheetContent>
-                            <SheetHeader>
-                                <SheetTitle>Settings</SheetTitle>
-                            </SheetHeader>
-                            <div className="py-4 flex flex-col h-full">
-                                <div className="flex flex-col items-center gap-4">
-                                    <Avatar className="h-20 w-20">
-                                        <AvatarImage src={user.photoURL || undefined} alt={user.displayName || 'User'} />
-                                        <AvatarFallback>{getInitials(user.displayName || user.email)}</AvatarFallback>
-                                    </Avatar>
-                                    <div className="text-center">
-                                        <p className="font-semibold text-lg">{user.displayName || user.email}</p>
-                                        <p className="text-sm text-muted-foreground">
-                                            {user.isAnonymous ? "Guest Account" : (user.email ? "" : "Signed In")}
-                                        </p>
-                                    </div>
-                                </div>
-                                <div className="mt-6 flex-grow space-y-4">
-                                    <ThemeToggleSwitch />
-                                    <Separator />
-                                    <div className="space-y-2 text-center">
-                                        <p className="text-sm font-medium">Designed by</p>
-                                        <p className="text-sm text-muted-foreground">Dr. AbdulRhman Ibn Ouf, Anaesthesiologist</p>
-                                    </div>
-                                    <div className="space-y-2">
-                                        <a href="mailto:x5ibnouf@gmail.com" className="w-full">
-                                            <Button variant="outline" className="w-full">
-                                                <Mail className="mr-2 h-4 w-4" />
-                                                Contact Developer
-                                            </Button>
-                                        </a>
-                                        <a href="mailto:x5ibnouf@gmail.com?subject=Bug%20Report:%20ABG%20AI%20Analyzer" className="w-full">
-                                            <Button variant="outline" className="w-full">
-                                                <Bug className="mr-2 h-4 w-4" />
-                                                Report a Bug
-                                            </Button>
-                                        </a>
-                                        <a href="#" target="_blank" rel="noopener noreferrer" className="w-full">
-                                            <Button variant="outline" className="w-full">
-                                                <Star className="mr-2 h-4 w-4" />
-                                                Rate App
-                                            </Button>
-                                        </a>
-                                    </div>
-                                </div>
+          <div className="flex items-center justify-between">
+            <div className="inline-flex items-center gap-0">
+                <Beaker className="h-8 w-8 text-primary" />
+                <h1 className="-ml-2 text-2xl font-bold tracking-tight bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                    ABG AI Analyzer
+                </h1>
+            </div>
+            <div className="flex items-center">
+              <Button variant="ghost" size="icon" onClick={() => setIsHistoryOpen(true)}>
+                  <History className="h-5 w-5" />
+                  <span className="sr-only">View History</span>
+              </Button>
+              <Sheet>
+                  <SheetTrigger asChild>
+                      <Button variant="ghost" size="icon">
+                          <Settings className="h-5 w-5" />
+                          <span className="sr-only">Open Settings</span>
+                      </Button>
+                  </SheetTrigger>
+                  <SheetContent>
+                      <SheetHeader>
+                          <SheetTitle>Settings</SheetTitle>
+                      </SheetHeader>
+                      <div className="py-4 flex flex-col h-full">
+                          <div className="flex flex-col items-center gap-4">
+                              <Avatar className="h-20 w-20">
+                                  <AvatarImage src={user.photoURL || undefined} alt={user.displayName || 'User'} />
+                                  <AvatarFallback>{getInitials(user.displayName || user.email)}</AvatarFallback>
+                              </Avatar>
+                              <div className="text-center">
+                                  <p className="font-semibold text-lg">{user.displayName || user.email}</p>
+                                  <p className="text-sm text-muted-foreground">
+                                      {user.isAnonymous ? "Guest Account" : (user.email ? "" : "Signed In")}
+                                  </p>
+                              </div>
+                          </div>
+                          <div className="mt-6 flex-grow space-y-4">
+                              <ThemeToggleSwitch />
+                              <Separator />
+                              <div className="space-y-2 text-center">
+                                  <p className="text-sm font-medium">Designed by</p>
+                                  <p className="text-sm text-muted-foreground">Dr. AbdulRhman Ibn Ouf, Anaesthesiologist</p>
 
-                                <div className="mt-auto">
-                                    <Button variant="destructive" onClick={handleSignOut} className="w-full">
-                                        <LogOut className="mr-2 h-4 w-4" />
-                                        Sign Out
-                                    </Button>
-                                </div>
-                            </div>
-                        </SheetContent>
-                    </Sheet>
-                </div>
+                              </div>
+                              <div className="space-y-2">
+                                  <a href="mailto:x5ibnouf@gmail.com" className="w-full">
+                                      <Button variant="outline" className="w-full">
+                                          <Mail className="mr-2 h-4 w-4" />
+                                          Contact Developer
+                                      </Button>
+                                  </a>
+                                  <a href="mailto:x5ibnouf@gmail.com?subject=Bug%20Report:%20ABG%20AI%20Analyzer" className="w-full">
+                                      <Button variant="outline" className="w-full">
+                                          <Bug className="mr-2 h-4 w-4" />
+                                          Report a Bug
+                                      </Button>
+                                  </a>
+                                  <a href="#" target="_blank" rel="noopener noreferrer" className="w-full">
+                                      <Button variant="outline" className="w-full">
+                                          <Star className="mr-2 h-4 w-4" />
+                                          Rate App
+                                      </Button>
+                                  </a>
+                              </div>
+                          </div>
+
+                          <div className="mt-auto">
+                              <Button variant="destructive" onClick={handleSignOut} className="w-full">
+                                  <LogOut className="mr-2 h-4 w-4" />
+                                  Sign Out
+                              </Button>
+                          </div>
+                      </div>
+                  </SheetContent>
+              </Sheet>
             </div>
-            <div className="text-center animate-in fade-in-50 duration-500">
-                <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                    Your AI-powered assistant for rapid Arterial Blood Gas analysis.
-                </p>
-            </div>
+          </div>
         </header>
+        <div className="text-center animate-in fade-in-50 duration-500">
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                Your AI-powered assistant for rapid Arterial Blood Gas analysis.
+            </p>
+        </div>
         <main className="container mx-auto px-4 py-8 md:py-12">
           <Sheet open={isHistoryOpen} onOpenChange={setIsHistoryOpen}>
             <SheetContent>
